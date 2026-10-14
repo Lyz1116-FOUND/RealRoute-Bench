@@ -1,0 +1,271 @@
+{
+  "schema_version": "realroute.problem.v1",
+  "atom_order": [
+    "capacity",
+    "time_window",
+    "service_time",
+    "route_duration",
+    "distance_limit",
+    "cost_budget",
+    "prize",
+    "penalty",
+    "min_prize",
+    "pickup_delivery",
+    "precedence",
+    "same_vehicle",
+    "different_vehicle",
+    "vehicle_limit"
+  ],
+  "atoms": [
+    {
+      "id": "capacity",
+      "kind": "state_and_predicate",
+      "required_inputs": [
+        "load_mode",
+        "vehicle_capacity",
+        "demand_or_request_quantity"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "depot_delivery",
+        "paired_pickup_delivery"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "conditional_dependencies": [
+        {
+          "if_mode": "paired_pickup_delivery",
+          "requires_enabled_atom": "pickup_delivery"
+        }
+      ],
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "mode"
+      ]
+    },
+    {
+      "id": "time_window",
+      "kind": "predicate",
+      "required_inputs": [
+        "travel_time_matrix",
+        "node_time_windows"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "hard_service_start"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [
+        "time_windows"
+      ],
+      "required_parameter_fields": [
+        "mode"
+      ]
+    },
+    {
+      "id": "service_time",
+      "kind": "state_update",
+      "required_inputs": [
+        "travel_time_matrix",
+        "node_service_time"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [
+        "service_time"
+      ],
+      "required_parameter_fields": []
+    },
+    {
+      "id": "route_duration",
+      "kind": "predicate",
+      "required_inputs": [
+        "travel_time_matrix",
+        "vehicle_duration_limits"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "limits"
+      ]
+    },
+    {
+      "id": "distance_limit",
+      "kind": "predicate",
+      "required_inputs": [
+        "distance_matrix",
+        "vehicle_distance_limits"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "limits"
+      ]
+    },
+    {
+      "id": "cost_budget",
+      "kind": "predicate",
+      "required_inputs": [
+        "travel_cost_budget",
+        "scope"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "per_route",
+        "total"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "scope"
+      ]
+    },
+    {
+      "id": "prize",
+      "kind": "attribute",
+      "required_inputs": [
+        "node_prize"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [
+        "prize"
+      ],
+      "required_parameter_fields": []
+    },
+    {
+      "id": "penalty",
+      "kind": "attribute",
+      "required_inputs": [
+        "node_penalty"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [
+        "penalty"
+      ],
+      "required_parameter_fields": []
+    },
+    {
+      "id": "min_prize",
+      "kind": "predicate",
+      "required_inputs": [
+        "minimum_prize"
+      ],
+      "requires_enabled_atoms": [
+        "prize"
+      ],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "minimum"
+      ]
+    },
+    {
+      "id": "pickup_delivery",
+      "kind": "relation_and_state",
+      "required_inputs": [
+        "requests"
+      ],
+      "requires_enabled_atoms": [
+        "capacity"
+      ],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_capacity_mode": "paired_pickup_delivery",
+      "induced_semantics": [
+        "paired_selection",
+        "same_vehicle_within_request",
+        "pickup_before_delivery",
+        "load_starts_and_ends_at_zero"
+      ],
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "requests"
+      ]
+    },
+    {
+      "id": "precedence",
+      "kind": "relation_predicate",
+      "required_inputs": [
+        "ordered_node_pairs"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "same_route_order_if_both_selected"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "pairs"
+      ]
+    },
+    {
+      "id": "same_vehicle",
+      "kind": "relation_predicate",
+      "required_inputs": [
+        "node_pairs"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "if_both_selected"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "pairs"
+      ]
+    },
+    {
+      "id": "different_vehicle",
+      "kind": "relation_predicate",
+      "required_inputs": [
+        "node_pairs"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "if_both_selected"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "pairs"
+      ]
+    },
+    {
+      "id": "vehicle_limit",
+      "kind": "predicate",
+      "required_inputs": [
+        "max_used_vehicles"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "IMPLEMENTED_PRECOLLECTION",
+      "required_attribute_fields": [],
+      "required_parameter_fields": [
+        "maximum"
+      ]
+    }
+  ]
+}

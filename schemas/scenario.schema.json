@@ -1,0 +1,527 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/scenario.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "realroute.problem.v1"
+    },
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonical_task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "min_total_cost",
+            "min_makespan",
+            "max_prize",
+            "min_cost_plus_penalty"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cost_weight": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "penalty_weight": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "type",
+        "unit"
+      ],
+      "additionalProperties": false
+    },
+    "time_origin": {
+      "type": "number",
+      "minimum": 0
+    },
+    "visit": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "optional": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "required",
+        "optional"
+      ],
+      "additionalProperties": false
+    },
+    "fleet": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "homogeneous",
+            "heterogeneous"
+          ]
+        },
+        "vehicles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "vehicle_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "start_node": {
+                "type": "string",
+                "minLength": 1
+              },
+              "end_node": {
+                "type": "string",
+                "minLength": 1
+              },
+              "start_time": {
+                "type": "number",
+                "minimum": 0
+              },
+              "capacity": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "fixed_cost": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "vehicle_id",
+              "start_node",
+              "start_time",
+              "fixed_cost"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "type",
+        "vehicles"
+      ],
+      "additionalProperties": false
+    },
+    "depots": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "route": {
+      "type": "object",
+      "properties": {
+        "end_mode": {
+          "enum": [
+            "closed",
+            "fixed",
+            "free"
+          ]
+        }
+      },
+      "required": [
+        "end_mode"
+      ],
+      "additionalProperties": false
+    },
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "capacity": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "mode": {
+              "enum": [
+                "depot_delivery",
+                "paired_pickup_delivery"
+              ]
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "time_window": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "mode": {
+              "const": "hard_service_start"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "service_time": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "route_duration": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "distance_limit": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "cost_budget": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "scope": {
+              "enum": [
+                "total",
+                "per_route"
+              ]
+            },
+            "maximum": {
+              "type": "number",
+              "minimum": 0
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "prize": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "penalty": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "min_prize": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "minimum": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "pickup_delivery": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "requests": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "request_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "pickup": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "delivery": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "request_id",
+                  "pickup",
+                  "delivery",
+                  "quantity"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "precedence": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "pairs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "same_vehicle": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "pairs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "different_vehicle": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "pairs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        "vehicle_limit": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "maximum": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "attributes": {
+      "type": "object",
+      "properties": {
+        "demand": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "service_time": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "prize": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "penalty": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "time_windows": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "attribute_provenance": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "SYNTHETIC",
+          "SEMI_SYNTHETIC",
+          "REAL"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "scenario_id",
+    "base_id",
+    "objective",
+    "time_origin",
+    "visit",
+    "fleet",
+    "depots",
+    "route",
+    "constraints",
+    "attributes"
+  ],
+  "additionalProperties": false
+}

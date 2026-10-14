@@ -1,0 +1,27 @@
+{
+  "min_total_cost": {
+    "direction": "min",
+    "dependencies": []
+  },
+  "min_makespan": {
+    "direction": "min",
+    "dependencies": [],
+    "unit": "seconds"
+  },
+  "max_prize": {
+    "direction": "max",
+    "dependencies": [
+      "prize"
+    ]
+  },
+  "min_cost_plus_penalty": {
+    "direction": "min",
+    "dependencies": [
+      "penalty"
+    ],
+    "requires": [
+      "cost_weight",
+      "penalty_weight"
+    ]
+  }
+}

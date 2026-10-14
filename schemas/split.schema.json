@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/split.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "realroute.split.v1"
+    },
+    "split_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "protocol": {
+      "enum": [
+        "seen_composition",
+        "cross_city",
+        "cross_time",
+        "cross_scale",
+        "unseen_composition_exact",
+        "unseen_composition_cooccurrence",
+        "unseen_atom",
+        "cross_city_and_unseen_composition"
+      ]
+    },
+    "assignments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "parent_group_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "partition": {
+            "enum": [
+              "train",
+              "validation",
+              "test"
+            ]
+          },
+          "effective_signature": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "instance_id",
+          "parent_group_id",
+          "partition",
+          "effective_signature"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "development_sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "heldout_atoms": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "heldout_interactions": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uniqueItems": true
+      }
+    },
+    "purge_horizon_sec": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "split_id",
+    "protocol",
+    "assignments",
+    "development_sources"
+  ],
+  "additionalProperties": false
+}

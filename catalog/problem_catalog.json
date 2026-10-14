@@ -1,0 +1,567 @@
+{
+  "schema_version": "realroute.problem.v1",
+  "catalog_type": "DEFINITION_PRESETS_NOT_EXECUTABLE_INSTANCES",
+  "authoritative_document": "docs/PROBLEM_SPEC_V1.md",
+  "base_rules": {
+    "directed_matrices": true,
+    "matrix_fixed_within_solve": true,
+    "assume_symmetry": false,
+    "assume_triangle_inequality": false,
+    "service_nodes_visited_at_most_once": true,
+    "max_routes_per_vehicle": 1,
+    "intermediate_terminals_allowed": false,
+    "split_delivery_allowed": false,
+    "complete_matrices_required": true
+  },
+  "scale": {
+    "N": "number of distinct physical routing nodes including terminals",
+    "customer_count": "number of service nodes excluding terminals",
+    "request_count": "number of pickup-delivery pairs"
+  },
+  "structural_dimensions": {
+    "objective": [
+      "min_total_cost",
+      "min_makespan",
+      "max_prize",
+      "min_cost_plus_penalty"
+    ],
+    "fleet_type": [
+      "homogeneous",
+      "heterogeneous"
+    ],
+    "route_end_mode": [
+      "closed",
+      "fixed",
+      "free"
+    ],
+    "visit_modes": [
+      "all_required",
+      "all_optional",
+      "mixed"
+    ]
+  },
+  "derived_features": {
+    "multi_depot": "len(normalized_effective_depots) > 1",
+    "heterogeneous_fleet": "normalized effective fleet has differing active capacity or fixed-cost capabilities",
+    "open_route": "normalized route.end_mode in [fixed, free]"
+  },
+  "atom_order": [
+    "capacity",
+    "time_window",
+    "service_time",
+    "route_duration",
+    "distance_limit",
+    "cost_budget",
+    "prize",
+    "penalty",
+    "min_prize",
+    "pickup_delivery",
+    "precedence",
+    "same_vehicle",
+    "different_vehicle",
+    "vehicle_limit"
+  ],
+  "atoms": [
+    {
+      "id": "capacity",
+      "kind": "state_and_predicate",
+      "required_inputs": [
+        "load_mode",
+        "vehicle_capacity",
+        "demand_or_request_quantity"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "depot_delivery",
+        "paired_pickup_delivery"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED",
+      "conditional_dependencies": [
+        {
+          "if_mode": "paired_pickup_delivery",
+          "requires_enabled_atom": "pickup_delivery"
+        }
+      ]
+    },
+    {
+      "id": "time_window",
+      "kind": "predicate",
+      "required_inputs": [
+        "travel_time_matrix",
+        "node_time_windows"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "hard_service_start"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "service_time",
+      "kind": "state_update",
+      "required_inputs": [
+        "travel_time_matrix",
+        "node_service_time"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "route_duration",
+      "kind": "predicate",
+      "required_inputs": [
+        "travel_time_matrix",
+        "vehicle_duration_limits"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "distance_limit",
+      "kind": "predicate",
+      "required_inputs": [
+        "distance_matrix",
+        "vehicle_distance_limits"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "cost_budget",
+      "kind": "predicate",
+      "required_inputs": [
+        "travel_cost_budget",
+        "scope"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "per_route",
+        "total"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "prize",
+      "kind": "attribute",
+      "required_inputs": [
+        "node_prize"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "penalty",
+      "kind": "attribute",
+      "required_inputs": [
+        "node_penalty"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "min_prize",
+      "kind": "predicate",
+      "required_inputs": [
+        "minimum_prize"
+      ],
+      "requires_enabled_atoms": [
+        "prize"
+      ],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "pickup_delivery",
+      "kind": "relation_and_state",
+      "required_inputs": [
+        "requests"
+      ],
+      "requires_enabled_atoms": [
+        "capacity"
+      ],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED",
+      "required_capacity_mode": "paired_pickup_delivery",
+      "induced_semantics": [
+        "paired_selection",
+        "same_vehicle_within_request",
+        "pickup_before_delivery",
+        "load_starts_and_ends_at_zero"
+      ]
+    },
+    {
+      "id": "precedence",
+      "kind": "relation_predicate",
+      "required_inputs": [
+        "ordered_node_pairs"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "same_route_order_if_both_selected"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "same_vehicle",
+      "kind": "relation_predicate",
+      "required_inputs": [
+        "node_pairs"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "if_both_selected"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "different_vehicle",
+      "kind": "relation_predicate",
+      "required_inputs": [
+        "node_pairs"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [
+        "if_both_selected"
+      ],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    },
+    {
+      "id": "vehicle_limit",
+      "kind": "predicate",
+      "required_inputs": [
+        "max_used_vehicles"
+      ],
+      "requires_enabled_atoms": [],
+      "modes": [],
+      "definition_status": "DEFINED",
+      "runtime_implementation_status": "NOT_ASSERTED"
+    }
+  ],
+  "canonical_templates": [
+    {
+      "canonical_task": "ATSP",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "single",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances."
+    },
+    {
+      "canonical_task": "ACVRP",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity"
+      ],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "capacity_mode": "depot_delivery"
+    },
+    {
+      "canonical_task": "AVRPTW",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "time_window"
+      ],
+      "optional_variant_atoms": [
+        "service_time"
+      ],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances."
+    },
+    {
+      "canonical_task": "ACVRPTW",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity",
+        "time_window"
+      ],
+      "optional_variant_atoms": [
+        "service_time"
+      ],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "capacity_mode": "depot_delivery"
+    },
+    {
+      "canonical_task": "AOP",
+      "objective": "max_prize",
+      "visit_mode": "all_optional",
+      "vehicle_count_mode": "single",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "fixed",
+      "depot_count_mode": "multiple",
+      "enabled_atoms": [
+        "prize",
+        "route_duration"
+      ],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "requires_distinct_start_and_end": true
+    },
+    {
+      "canonical_task": "PCTSP",
+      "objective": "min_cost_plus_penalty",
+      "visit_mode": "all_optional",
+      "vehicle_count_mode": "single",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "prize",
+        "penalty",
+        "min_prize"
+      ],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances."
+    },
+    {
+      "canonical_task": "AOVRP",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "free",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity"
+      ],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "capacity_mode": "depot_delivery"
+    },
+    {
+      "canonical_task": "AMDVRP",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "multiple",
+      "enabled_atoms": [
+        "capacity"
+      ],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "capacity_mode": "depot_delivery"
+    },
+    {
+      "canonical_task": "APDP",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required_requests",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity",
+        "pickup_delivery"
+      ],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "capacity_mode": "paired_pickup_delivery"
+    },
+    {
+      "canonical_task": "APDPTW",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required_requests",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity",
+        "time_window",
+        "pickup_delivery"
+      ],
+      "optional_variant_atoms": [
+        "service_time"
+      ],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "capacity_mode": "paired_pickup_delivery"
+    },
+    {
+      "canonical_task": "AHCVRP",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "heterogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity"
+      ],
+      "optional_variant_atoms": [],
+      "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+      "capacity_mode": "depot_delivery"
+    }
+  ],
+  "compositional_presets": [
+    {
+      "id": "comp_capacity_prize_open_duration",
+      "objective": "max_prize",
+      "visit_mode": "all_optional",
+      "vehicle_count_mode": "single",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "free",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity",
+        "prize",
+        "route_duration"
+      ],
+      "capacity_mode": "depot_delivery"
+    },
+    {
+      "id": "comp_multidepot_tw_open",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "free",
+      "depot_count_mode": "multiple",
+      "enabled_atoms": [
+        "time_window",
+        "service_time"
+      ]
+    },
+    {
+      "id": "comp_pd_open_duration",
+      "objective": "min_total_cost",
+      "visit_mode": "all_required_requests",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "free",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity",
+        "pickup_delivery",
+        "route_duration"
+      ],
+      "capacity_mode": "paired_pickup_delivery"
+    },
+    {
+      "id": "comp_penalty_hetero_tw",
+      "objective": "min_cost_plus_penalty",
+      "visit_mode": "mixed",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "heterogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "single",
+      "enabled_atoms": [
+        "capacity",
+        "time_window",
+        "penalty"
+      ],
+      "capacity_mode": "depot_delivery"
+    },
+    {
+      "id": "comp_prize_tw_fixedend",
+      "objective": "max_prize",
+      "visit_mode": "all_optional",
+      "vehicle_count_mode": "single",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "fixed",
+      "depot_count_mode": "multiple",
+      "enabled_atoms": [
+        "prize",
+        "time_window",
+        "service_time",
+        "route_duration"
+      ],
+      "requires_distinct_start_and_end": true
+    },
+    {
+      "id": "comp_pd_prize_multidepot",
+      "objective": "max_prize",
+      "visit_mode": "all_optional_requests",
+      "vehicle_count_mode": "multi",
+      "fleet_type": "homogeneous",
+      "route_end_mode": "closed",
+      "depot_count_mode": "multiple",
+      "enabled_atoms": [
+        "capacity",
+        "pickup_delivery",
+        "prize",
+        "route_duration"
+      ],
+      "capacity_mode": "paired_pickup_delivery"
+    }
+  ],
+  "objective_dependencies": {
+    "min_makespan": {
+      "requires_inputs": [
+        "travel_time_matrix",
+        "time_origin",
+        "fixed_vehicle_start_times"
+      ]
+    },
+    "max_prize": {
+      "requires_enabled_atoms": [
+        "prize"
+      ]
+    },
+    "min_cost_plus_penalty": {
+      "requires_enabled_atoms": [
+        "penalty"
+      ],
+      "requires_inputs": [
+        "objective_weights",
+        "shared_objective_unit"
+      ]
+    }
+  },
+  "generalization_protocols": [
+    "seen_composition",
+    "cross_city",
+    "cross_time",
+    "cross_scale",
+    "unseen_composition_exact",
+    "unseen_composition_cooccurrence",
+    "unseen_atom",
+    "cross_city_and_unseen_composition"
+  ],
+  "default_inactive_atom_policy": "Missing atom is disabled; enabled atom with missing dependencies is INPUT_INVALID.",
+  "claim_boundary": "Definitions only. No new dataset, checker implementation, solver evaluation, or benchmark performance is claimed.",
+  "normalization_rules": [
+    "fixed endpoints equal starts for all vehicles => closed",
+    "declared heterogeneous with identical effective capability and fixed-cost parameters => homogeneous",
+    "pickup-induced precedence and same-vehicle relations are not independent atoms",
+    "all-zero service time => inactive effective service_time feature",
+    "retain original input and normalization log; exhaustive semantic equivalence is not claimed"
+  ]
+}

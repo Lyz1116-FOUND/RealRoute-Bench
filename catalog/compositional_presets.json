@@ -1,0 +1,92 @@
+[
+  {
+    "id": "comp_capacity_prize_open_duration",
+    "objective": "max_prize",
+    "visit_mode": "all_optional",
+    "vehicle_count_mode": "single",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "free",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity",
+      "prize",
+      "route_duration"
+    ],
+    "capacity_mode": "depot_delivery"
+  },
+  {
+    "id": "comp_multidepot_tw_open",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "free",
+    "depot_count_mode": "multiple",
+    "enabled_atoms": [
+      "time_window",
+      "service_time"
+    ]
+  },
+  {
+    "id": "comp_pd_open_duration",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required_requests",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "free",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity",
+      "pickup_delivery",
+      "route_duration"
+    ],
+    "capacity_mode": "paired_pickup_delivery"
+  },
+  {
+    "id": "comp_penalty_hetero_tw",
+    "objective": "min_cost_plus_penalty",
+    "visit_mode": "mixed",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "heterogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity",
+      "time_window",
+      "penalty"
+    ],
+    "capacity_mode": "depot_delivery"
+  },
+  {
+    "id": "comp_prize_tw_fixedend",
+    "objective": "max_prize",
+    "visit_mode": "all_optional",
+    "vehicle_count_mode": "single",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "fixed",
+    "depot_count_mode": "multiple",
+    "enabled_atoms": [
+      "prize",
+      "time_window",
+      "service_time",
+      "route_duration"
+    ],
+    "requires_distinct_start_and_end": true
+  },
+  {
+    "id": "comp_pd_prize_multidepot",
+    "objective": "max_prize",
+    "visit_mode": "all_optional_requests",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "multiple",
+    "enabled_atoms": [
+      "capacity",
+      "pickup_delivery",
+      "prize",
+      "route_duration"
+    ],
+    "capacity_mode": "paired_pickup_delivery"
+  }
+]

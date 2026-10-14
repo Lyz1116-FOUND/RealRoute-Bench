@@ -1,0 +1,32 @@
+{
+  "condition_records": 30,
+  "cohorts": {
+    "bailian_first": {
+      "conditions": 12,
+      "responses": 6,
+      "valid": 3
+    },
+    "bailian_transport_recovery": {
+      "conditions": 5,
+      "responses": 1,
+      "valid": 1
+    },
+    "bailian_constrained": {
+      "conditions": 4,
+      "responses": 2,
+      "valid": 0
+    },
+    "bailian_k3_anthropic_followup": {
+      "conditions": 2,
+      "responses": 1,
+      "valid": 1
+    },
+    "intern_first": {
+      "conditions": 7,
+      "responses": 2,
+      "valid": 1
+    }
+  },
+  "one_task_single_trial_no_model_rank_claim": true,
+  "formal_llm_benchmark_completed": false
+}

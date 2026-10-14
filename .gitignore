@@ -1,0 +1,13 @@
+.DS_Store
+.local/
+.venv/
+__pycache__/
+*.pyc
+*.lic
+.env
+.env.*
+data/
+runtime/
+private/
+*api_key*
+*credentials*

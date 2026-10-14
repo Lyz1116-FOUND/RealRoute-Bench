@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="280" viewBox="0 0 1280 280" role="img" aria-label="One city world. Many routing tasks.">
+    <rect width="1280" height="280" rx="24" fill="#123b3a"/>
+    <path d="M920 0L1150 340M1000 0L1230 340M850 80H1280M850 130H1280" stroke="#34615d" stroke-width="2" opacity=".5"/>
+    <g font-family="Arial, Helvetica, sans-serif">
+    <text x="48" y="65" font-size="30" fill="#fff" font-weight="700">One city world. Many routing tasks.</text>
+    <text x="48" y="104" font-size="18" fill="#b7d0ca">Frozen spatial identity connects collection, task construction and evaluation.</text>
+    <rect x="48" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="68" y="179" fill="#79d7be" font-size="13" letter-spacing="2">01 / WORLD</text>
+        <text x="68" y="210" fill="#fff" font-size="21" font-weight="700">BaseInstance</text>
+        <text x="68" y="234" fill="#bbcecc" font-size="13">Stable node IDs + directed matrices</text><rect x="348" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="368" y="179" fill="#79d7be" font-size="13" letter-spacing="2">02 / TASK</text>
+        <text x="368" y="210" fill="#fff" font-size="21" font-weight="700">Scenario</text>
+        <text x="368" y="234" fill="#bbcecc" font-size="13">Objective + atoms + structural axes</text><rect x="648" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="668" y="179" fill="#79d7be" font-size="13" letter-spacing="2">03 / SOLVE</text>
+        <text x="668" y="210" fill="#fff" font-size="21" font-weight="700">Solver / LLM</text>
+        <text x="668" y="234" fill="#bbcecc" font-size="13">Controlled information and budget</text><rect x="948" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="968" y="179" fill="#79d7be" font-size="13" letter-spacing="2">04 / VERIFY</text>
+        <text x="968" y="210" fill="#fff" font-size="21" font-weight="700">Independent checker</text>
+        <text x="968" y="234" fill="#bbcecc" font-size="13">Feasibility + recomputed objective</text>
+    
+    </g></svg>

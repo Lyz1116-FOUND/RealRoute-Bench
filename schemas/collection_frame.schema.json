@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/collection_frame.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "realroute.collection.v1"
+    },
+    "frame_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_type": {
+      "enum": [
+        "REAL",
+        "SYNTHETIC"
+      ]
+    },
+    "city": {
+      "type": "object",
+      "properties": {
+        "city_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adcode": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$"
+        },
+        "country_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sampling_region_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "routing_region_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "city_id",
+        "name",
+        "adcode",
+        "country_code",
+        "timezone",
+        "classification",
+        "sampling_region_ref",
+        "routing_region_ref"
+      ],
+      "additionalProperties": false
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "poi_category": {
+            "type": "string",
+            "minLength": 1
+          },
+          "city_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "adcode": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$"
+          },
+          "crs": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "routing_lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "routing_lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "snap_offset_meter": {
+            "type": "number",
+            "minimum": 0
+          },
+          "source_object_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "node_id",
+          "lat",
+          "lon",
+          "poi_category",
+          "city_id",
+          "adcode",
+          "crs",
+          "source_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "node_order": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "cost_type": {
+      "const": "travel_time"
+    },
+    "cost_unit": {
+      "const": "seconds"
+    },
+    "travel_time_unit": {
+      "const": "seconds"
+    },
+    "distance_unit": {
+      "const": "meters"
+    },
+    "collection_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "collection_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "available_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "target_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "origin_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "destination_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "travel_duration_sec": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "route_distance_meter": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "distance_path_semantics": {
+            "enum": [
+              "same_provider_route",
+              "independent_static_budget"
+            ]
+          },
+          "requested_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "strategy": {
+            "type": "string",
+            "minLength": 1
+          },
+          "raw_response_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "raw_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "code_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "code_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "provider_state_updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "origin_id",
+          "destination_id",
+          "travel_duration_sec",
+          "requested_at",
+          "received_at",
+          "available_at",
+          "provider",
+          "strategy",
+          "raw_response_ref",
+          "raw_sha256",
+          "code_version",
+          "code_sha256",
+          "attempt",
+          "provider_state_updated_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "strategy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "node_order_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "distance_required": {
+      "type": "boolean"
+    },
+    "diagonal_policy": {
+      "const": "zero_by_definition"
+    },
+    "code_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "config_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "frame_id",
+    "base_id",
+    "source_type",
+    "city",
+    "nodes",
+    "node_order",
+    "cost_type",
+    "cost_unit",
+    "travel_time_unit",
+    "collection_start",
+    "collection_end",
+    "available_at",
+    "target_at",
+    "records",
+    "provider",
+    "strategy",
+    "code_version",
+    "code_sha256",
+    "config_sha256",
+    "node_order_sha256",
+    "distance_required",
+    "diagonal_policy",
+    "code_ref",
+    "config_ref"
+  ],
+  "additionalProperties": false
+}

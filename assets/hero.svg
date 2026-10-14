@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="340" viewBox="0 0 1280 340" role="img" aria-label="RealRoute-Bench">
+    <rect width="1280" height="340" rx="24" fill="#123b3a"/>
+    <path d="M920 0L1150 340M1000 0L1230 340M850 80H1280M850 130H1280" stroke="#34615d" stroke-width="2" opacity=".5"/>
+    <g font-family="Arial, Helvetica, sans-serif">
+    <text x="48" y="65" font-size="42" fill="#fff" font-weight="700">RealRoute-Bench</text>
+    <text x="48" y="104" font-size="18" fill="#b7d0ca">Real urban routing. Composable constraints. Independently checked solutions.</text>
+    <rect x="48" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="68" y="179" fill="#79d7be" font-size="13" letter-spacing="2">CITIES / STUDY REGIONS</text>
+        <text x="68" y="210" fill="#fff" font-size="28" font-weight="700">12</text>
+        <text x="68" y="234" fill="#bbcecc" font-size="13">Cross-city spatial distributions</text><rect x="348" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="368" y="179" fill="#79d7be" font-size="13" letter-spacing="2">FROZEN ROAD ENDPOINTS</text>
+        <text x="368" y="210" fill="#fff" font-size="28" font-weight="700">2,400</text>
+        <text x="368" y="234" fill="#bbcecc" font-size="13">200 per city · nested 20 / 50 / 100 / 200</text><rect x="648" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="668" y="179" fill="#79d7be" font-size="13" letter-spacing="2">CONSTRAINT ATOMS</text>
+        <text x="668" y="210" fill="#fff" font-size="28" font-weight="700">14</text>
+        <text x="668" y="234" fill="#bbcecc" font-size="13">11 classical templates + 6 compositions</text><rect x="948" y="150" width="284" height="100" rx="16" fill="#ffffff" fill-opacity=".07" stroke="#416462"/>
+        <text x="968" y="179" fill="#79d7be" font-size="13" letter-spacing="2">STATIC INSTANCES</text>
+        <text x="968" y="210" fill="#fff" font-size="28" font-weight="700">1,176</text>
+        <text x="968" y="234" fill="#bbcecc" font-size="13">Unique semi-synthetic routing tasks</text>
+    <text x="48" y="303" font-size="14" fill="#d9be82">RESEARCH PREVIEW · 15 OCT 2026 · Formal dynamic release and leaderboard pending</text>
+    </g></svg>

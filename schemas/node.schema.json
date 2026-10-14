@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/node.schema.json",
+  "type": "object",
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lat": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "lon": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180
+    },
+    "poi_category": {
+      "type": "string",
+      "minLength": 1
+    },
+    "city_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adcode": {
+      "type": "string",
+      "pattern": "^[0-9]{6}$"
+    },
+    "crs": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "routing_lat": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "routing_lon": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180
+    },
+    "snap_offset_meter": {
+      "type": "number",
+      "minimum": 0
+    },
+    "source_object_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "node_id",
+    "lat",
+    "lon",
+    "poi_category",
+    "city_id",
+    "adcode",
+    "crs",
+    "source_ref"
+  ],
+  "additionalProperties": false
+}

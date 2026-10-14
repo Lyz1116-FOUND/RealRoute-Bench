@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/matrix_manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "base_id",
+    "node_ids",
+    "node_order_sha256",
+    "cost_type",
+    "matrices",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "realroute.matrix_manifest.v1"
+    },
+    "base_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "node_order_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "cost_type": {
+      "enum": [
+        "travel_time",
+        "generalized",
+        "monetary",
+        "synthetic"
+      ]
+    },
+    "matrices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cost",
+        "travel_time"
+      ],
+      "properties": {
+        "cost": {
+          "type": "object",
+          "required": [
+            "ref",
+            "sha256",
+            "unit",
+            "format",
+            "shape",
+            "node_order_sha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "format": {
+              "const": "json"
+            },
+            "shape": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "integer",
+                "minimum": 2
+              }
+            },
+            "node_order_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "travel_time": {
+          "type": "object",
+          "required": [
+            "ref",
+            "sha256",
+            "unit",
+            "format",
+            "shape",
+            "node_order_sha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "format": {
+              "const": "json"
+            },
+            "shape": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "integer",
+                "minimum": 2
+              }
+            },
+            "node_order_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "distance": {
+          "type": "object",
+          "required": [
+            "ref",
+            "sha256",
+            "unit",
+            "format",
+            "shape",
+            "node_order_sha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "format": {
+              "const": "json"
+            },
+            "shape": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "integer",
+                "minimum": 2
+              }
+            },
+            "node_order_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_type"
+      ]
+    }
+  }
+}

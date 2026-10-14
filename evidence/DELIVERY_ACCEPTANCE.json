@@ -1,0 +1,20 @@
+{
+  "status": "PASS_ENGINEERING_AND_PILOT_WITH_DISCLOSED_LIMITS",
+  "managed_core_files_verified": 156,
+  "frozen_v3_files_verified": 492,
+  "static_instances_with_frozen_split": 1176,
+  "static_split_counts": {
+    "test": 392,
+    "train": 588,
+    "validation": 196
+  },
+  "parent_overlap": false,
+  "pilot_conditions_rechecked": 68,
+  "pilot_reference_solutions_verified": 17,
+  "public_secret_checks": 2360,
+  "gurobi_configured_license_expired": true,
+  "full_scale_reference_completed": false,
+  "formal_llm_benchmark_completed": false,
+  "within_route_dynamic_extension_completed": false,
+  "public_website_deployed": false
+}

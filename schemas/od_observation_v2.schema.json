@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/od_observation_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "realroute.od_observation.v2"
+    },
+    "frame_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "destination_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "destination_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status": {
+      "const": "observed"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "duration_s": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "canonical_distance_m": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "provider_route_distance_m": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "distance_path_semantics": {
+      "const": "independent_static_budget"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "od_available_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "frame_available_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "provider_state_updated_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "provider": {
+      "const": "AMap"
+    },
+    "strategy": {
+      "const": "distance_type1_traffic_aware"
+    },
+    "raw_response_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "raw_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "native_raw_line": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "adapter_code_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "frame_id",
+    "origin_id",
+    "destination_id",
+    "origin_index",
+    "destination_index",
+    "status",
+    "attempt",
+    "duration_s",
+    "canonical_distance_m",
+    "provider_route_distance_m",
+    "distance_path_semantics",
+    "requested_at",
+    "received_at",
+    "od_available_at",
+    "frame_available_at",
+    "provider_state_updated_at",
+    "provider",
+    "strategy",
+    "raw_response_ref",
+    "raw_sha256",
+    "native_raw_line",
+    "adapter_code_sha256"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/city.schema.json",
+  "type": "object",
+  "properties": {
+    "city_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adcode": {
+      "type": "string",
+      "pattern": "^[0-9]{6}$"
+    },
+    "country_code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "classification": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sampling_region_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "routing_region_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "city_id",
+    "name",
+    "adcode",
+    "country_code",
+    "timezone",
+    "classification",
+    "sampling_region_ref",
+    "routing_region_ref"
+  ],
+  "additionalProperties": false
+}

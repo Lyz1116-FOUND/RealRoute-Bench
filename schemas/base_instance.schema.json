@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/base_instance.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "realroute.problem.v1"
+    },
+    "base_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "cost_unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "travel_time_unit": {
+      "const": "seconds"
+    },
+    "cost_matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "travel_time_matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "distance_unit": {
+      "const": "meters"
+    },
+    "distance_matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "cost_type": {
+      "enum": [
+        "travel_time",
+        "generalized",
+        "monetary",
+        "synthetic"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_type"
+      ],
+      "properties": {
+        "source_type": {
+          "enum": [
+            "SYNTHETIC",
+            "REAL",
+            "SEMI_SYNTHETIC"
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "base_id",
+    "node_ids",
+    "cost_unit",
+    "travel_time_unit",
+    "cost_matrix",
+    "travel_time_matrix",
+    "provenance"
+  ],
+  "additionalProperties": false
+}

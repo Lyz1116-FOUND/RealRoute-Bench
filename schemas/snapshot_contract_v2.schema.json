@@ -1,0 +1,691 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/snapshot_contract_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "realroute.snapshot_contract.v2"
+    },
+    "city_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "frame_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node_version": {
+      "const": "osm_frozen_v3"
+    },
+    "node_ids": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "node_order_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "node_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "n": {
+      "enum": [
+        20,
+        50,
+        100,
+        200
+      ]
+    },
+    "expected_od": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "parent_n": {
+      "enum": [
+        20,
+        50,
+        100,
+        200
+      ]
+    },
+    "parent_native_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "split_family_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "split_assigned": {
+      "const": false
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "frame.json": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "adapter_manifest.json": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "matrix_manifest.json": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "od_request_map.json": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "frame.json",
+        "adapter_manifest.json",
+        "matrix_manifest.json",
+        "od_request_map.json"
+      ],
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "native_manifest": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "provider_bindings": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "node_freeze": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "master_nodes": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "graph_reference": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "category_allocation": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "node_coverage": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "candidate_pool": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "osm_extractor_code": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "native_requests": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "schedule_binding": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "canonical_static_manifest": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "canonical_static_distance": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "exporter_code": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "row_schema": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        "contract_schema": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "sha256"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "native_manifest",
+        "provider_bindings",
+        "node_freeze",
+        "master_nodes",
+        "graph_reference",
+        "category_allocation",
+        "node_coverage",
+        "candidate_pool",
+        "osm_extractor_code",
+        "native_requests",
+        "canonical_static_manifest",
+        "canonical_static_distance",
+        "exporter_code",
+        "row_schema",
+        "contract_schema"
+      ],
+      "additionalProperties": false
+    },
+    "od_table": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "format": {
+          "const": "jsonl"
+        }
+      },
+      "required": [
+        "ref",
+        "sha256",
+        "format"
+      ],
+      "additionalProperties": false
+    },
+    "nodes_context": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "ref",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "series_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "slot_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sampling_kind": {
+          "enum": [
+            "production",
+            "commissioning",
+            "pilot",
+            "unbound"
+          ]
+        },
+        "nominal_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "is_formal_production": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "series_id",
+        "slot_id",
+        "sampling_kind",
+        "nominal_at",
+        "is_formal_production"
+      ],
+      "additionalProperties": false
+    },
+    "time": {
+      "type": "object",
+      "properties": {
+        "timezone": {
+          "const": "Asia/Shanghai"
+        },
+        "frame_start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "frame_end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "available_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "available_at_semantics": {
+          "const": "collector_finished_upper_bound; entire parent frame"
+        },
+        "receipt_semantics": {
+          "enum": [
+            "legacy_parsing_inclusive_upper_bound",
+            "response_body_received"
+          ]
+        },
+        "provider_state_time": {
+          "const": "unknown; do not substitute request or receipt time"
+        },
+        "within_route_time_dependent": {
+          "const": false
+        }
+      },
+      "required": [
+        "timezone",
+        "frame_start",
+        "frame_end",
+        "available_at",
+        "available_at_semantics",
+        "receipt_semantics",
+        "provider_state_time",
+        "within_route_time_dependent"
+      ],
+      "additionalProperties": false
+    },
+    "units": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "const": "seconds"
+        },
+        "distance": {
+          "const": "meters"
+        },
+        "coordinates": {
+          "const": "EPSG:4326"
+        }
+      },
+      "required": [
+        "duration",
+        "distance",
+        "coordinates"
+      ],
+      "additionalProperties": false
+    },
+    "semantics": {
+      "type": "object",
+      "properties": {
+        "dynamic_duration": {
+          "const": "AMap traffic-aware OD estimate; not edge speed"
+        },
+        "canonical_distance": {
+          "const": "OSM fastest-profile-route distance; independent static budget"
+        },
+        "provider_distance": {
+          "const": "same AMap route as dynamic duration; auxiliary"
+        },
+        "diagonal": {
+          "const": "structural zero; no observed diagonal rows"
+        },
+        "missing": {
+          "const": "no zero fill; failed frame remains raw/quarantined"
+        },
+        "spatial_scope": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "dynamic_duration",
+        "canonical_distance",
+        "provider_distance",
+        "diagonal",
+        "missing",
+        "spatial_scope"
+      ],
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "exporter_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "city_id",
+    "frame_id",
+    "node_version",
+    "node_ids",
+    "node_order_sha256",
+    "node_manifest_sha256",
+    "n",
+    "expected_od",
+    "parent_n",
+    "parent_native_manifest_sha256",
+    "split_family_id",
+    "split_assigned",
+    "inputs",
+    "evidence",
+    "od_table",
+    "nodes_context",
+    "schedule",
+    "time",
+    "units",
+    "semantics",
+    "limitations",
+    "exporter_sha256"
+  ],
+  "additionalProperties": false
+}

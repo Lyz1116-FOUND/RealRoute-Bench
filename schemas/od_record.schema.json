@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://realroute-bench.local/schemas/od_record.schema.json",
+  "type": "object",
+  "properties": {
+    "origin_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "destination_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "travel_duration_sec": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "route_distance_meter": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "distance_path_semantics": {
+      "enum": [
+        "same_provider_route",
+        "independent_static_budget"
+      ]
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "available_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "strategy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "raw_response_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "raw_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "code_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "provider_state_updated_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "origin_id",
+    "destination_id",
+    "travel_duration_sec",
+    "requested_at",
+    "received_at",
+    "available_at",
+    "provider",
+    "strategy",
+    "raw_response_ref",
+    "raw_sha256",
+    "code_version",
+    "code_sha256",
+    "attempt",
+    "provider_state_updated_at"
+  ],
+  "additionalProperties": false
+}

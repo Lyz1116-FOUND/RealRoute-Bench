@@ -1,0 +1,175 @@
+[
+  {
+    "canonical_task": "ATSP",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "single",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances."
+  },
+  {
+    "canonical_task": "ACVRP",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity"
+    ],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "capacity_mode": "depot_delivery"
+  },
+  {
+    "canonical_task": "AVRPTW",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "time_window"
+    ],
+    "optional_variant_atoms": [
+      "service_time"
+    ],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances."
+  },
+  {
+    "canonical_task": "ACVRPTW",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity",
+      "time_window"
+    ],
+    "optional_variant_atoms": [
+      "service_time"
+    ],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "capacity_mode": "depot_delivery"
+  },
+  {
+    "canonical_task": "AOP",
+    "objective": "max_prize",
+    "visit_mode": "all_optional",
+    "vehicle_count_mode": "single",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "fixed",
+    "depot_count_mode": "multiple",
+    "enabled_atoms": [
+      "prize",
+      "route_duration"
+    ],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "requires_distinct_start_and_end": true
+  },
+  {
+    "canonical_task": "PCTSP",
+    "objective": "min_cost_plus_penalty",
+    "visit_mode": "all_optional",
+    "vehicle_count_mode": "single",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "prize",
+      "penalty",
+      "min_prize"
+    ],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances."
+  },
+  {
+    "canonical_task": "AOVRP",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "free",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity"
+    ],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "capacity_mode": "depot_delivery"
+  },
+  {
+    "canonical_task": "AMDVRP",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "multiple",
+    "enabled_atoms": [
+      "capacity"
+    ],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "capacity_mode": "depot_delivery"
+  },
+  {
+    "canonical_task": "APDP",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required_requests",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity",
+      "pickup_delivery"
+    ],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "capacity_mode": "paired_pickup_delivery"
+  },
+  {
+    "canonical_task": "APDPTW",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required_requests",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "homogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity",
+      "time_window",
+      "pickup_delivery"
+    ],
+    "optional_variant_atoms": [
+      "service_time"
+    ],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "capacity_mode": "paired_pickup_delivery"
+  },
+  {
+    "canonical_task": "AHCVRP",
+    "objective": "min_total_cost",
+    "visit_mode": "all_required",
+    "vehicle_count_mode": "multi",
+    "fleet_type": "heterogeneous",
+    "route_end_mode": "closed",
+    "depot_count_mode": "single",
+    "enabled_atoms": [
+      "capacity"
+    ],
+    "optional_variant_atoms": [],
+    "parameters_required": "See atom required_inputs and PROBLEM_DEFINITION.md; presets are not complete instances.",
+    "capacity_mode": "depot_delivery"
+  }
+]
