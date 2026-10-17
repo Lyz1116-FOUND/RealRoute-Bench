@@ -11,7 +11,7 @@
   <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-> **Research preview · snapshot: 15 October 2026.** This private repository is the current-stage project page and curated artifact snapshot. The OSM v3 spatial foundation and static task inputs are complete; the scheduled fresh traffic sequence, full reference runs and formal model evaluation are not yet a completed benchmark release. All results below are development pilots, not a leaderboard.
+> **Research preview · snapshot: 17 October 2026.** This private repository is the current-stage project page and curated artifact snapshot. The OSM v3 spatial foundation and static task inputs are complete; the scheduled 14-day fresh traffic sequence is now **in progress** (day 3 of 14), while full reference runs and formal model evaluation are not yet a completed benchmark release. All results below are development pilots, not a leaderboard.
 
 ## Overview
 
@@ -78,7 +78,7 @@ Road metrics refer to declared study regions. Raw graph connectivity omits full 
 | Layer | Source and semantics | Status / access |
 |---|---|---|
 | Spatial + static | OSM v3 endpoints; OSRM distance and profile duration | Complete locally; input-only static scenario bundle below |
-| Fresh dynamic | AMap **provider traffic-aware OD duration**, same frozen endpoints | Scheduled 14-day collection; final QA and release pending |
+| Fresh dynamic | AMap **provider traffic-aware OD duration**, same frozen endpoints | 14-day collection **in progress (day 3/14)**: 300/1,680 city-time frames collected as of 17 Oct 2026; final QA and release pending |
 | Historical auxiliary | Chengdu native link-speed observations and derived native-graph diagnostics | 45 published days downloaded; 44 usable complete days; no validated full v3 mapping |
 | Traffic context | Baidu published city metrics, curves and forecasts | Separate collection chain; nine covered cities; not OD ground truth |
 
@@ -103,7 +103,7 @@ The verifier checks file hashes, archive shape, all 1,176 task input pairs and c
 
 ### Fresh Dynamic v1: collection design
 
-**Planned window:** 15–28 October 2026 inclusive, `Asia/Shanghai`.
+**Collection window:** 15–28 October 2026 inclusive, `Asia/Shanghai`. Collection is **in progress** — 300 of 1,680 city-time frames (day 3 of 14) have been collected as of 17 October 2026.
 
 ```text
 03:30  07:00  08:00  09:00  12:30
@@ -189,7 +189,7 @@ Recovery includes four pre-call budget blocks. Cohorts differ in protocol and re
 - [x] 1,176 unique static inputs; static cross-city split; measured city metrics.
 - [x] Solver adapters, LNS and actual LLM development trials.
 - [x] Protected AMap scheduling, separate Baidu context collection, normalization and QA integration in the local research workspace.
-- [ ] Complete and QA the fresh sequence; freeze retained dynamic frames and date split.
+- [ ] **In progress** — complete and QA the fresh sequence (day 3/14 collected as of 17 Oct 2026); freeze retained dynamic frames and date split.
 - [ ] Freeze composition holdouts and formal model/budget/repetition protocols.
 - [ ] Run full references, strong-baseline comparisons and formal LLM/temporal experiments.
 - [ ] Publish a versioned benchmark release, paper and formal leaderboard.

@@ -1,4 +1,4 @@
-# Current-stage status · 2026-10-15
+# Current-stage status · 2026-10-17
 
 | Component | State | Evidence / boundary |
 |---|---|---|
@@ -9,7 +9,7 @@
 | Static scenarios | 1,176 unique inputs | Real spatial base; synthetic operational attributes |
 | Static city-held-out split | Frozen | 588 train / 196 validation / 392 test |
 | City structure metrics | Completed | Declared study-region metrics; limited raw topology semantics |
-| Protected AMap + separate Baidu collection chain | Implemented locally | Runtime and quotas must be checked live; not a completed 14-day sequence |
+| Protected AMap + separate Baidu collection chain | In progress (day 3/14) | 300/1,680 city-time frames collected as of 2026-10-17; runtime and quotas checked live; not a completed 14-day sequence |
 | Historical Chengdu | Native auxiliary track | Full source downloaded, 44 usable complete days; canonical v3 mapping unresolved |
 | T-Drive / DiDi canonical ingestion | Pending | No completed map-matched canonical source |
 | MILP / LNS adapters | Implemented | 17-case development pilot; licensed/full-scale coverage limitations |
