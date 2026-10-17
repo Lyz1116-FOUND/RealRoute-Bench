@@ -1,0 +1,104 @@
+{
+  "schema": "collection-progress-v1",
+  "snapshot_at": "2026-10-17T15:52:43.581815+08:00",
+  "window": {
+    "timezone": "Asia/Shanghai",
+    "start": "2026-10-15",
+    "end": "2026-10-28",
+    "days_planned": 14,
+    "slots_per_day": 10,
+    "cities": 12,
+    "nodes_per_city": 200,
+    "od_entries_per_frame": 39800,
+    "frames_planned": 1680,
+    "od_time_values_planned": 66864000
+  },
+  "progress": {
+    "current_day": 3,
+    "frames_collected": 300,
+    "od_time_values_collected": 11940000,
+    "completion_pct": 17.86
+  },
+  "daily": [
+    {
+      "date": "2026-10-15",
+      "frames_collected": 120
+    },
+    {
+      "date": "2026-10-16",
+      "frames_collected": 120
+    },
+    {
+      "date": "2026-10-17",
+      "frames_collected": 60
+    }
+  ],
+  "cities": [
+    {
+      "city": "beijing",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "shanghai",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "xian",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "chongqing",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "chengdu",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "hangzhou",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "wuhan",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "xiamen",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "sanya",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "yiwu",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "dunhuang",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    },
+    {
+      "city": "anji",
+      "frames_collected": 25,
+      "od_entries_collected": 995000
+    }
+  ],
+  "quota": {
+    "monthly_capacity": 691348,
+    "used": 124830,
+    "remaining": 566518
+  },
+  "note": "Frames are counted as collected traffic observations on the frozen v3 nodes. Raw provider responses, account identities, credentials and per-account quota ledgers are excluded from this snapshot."
+}

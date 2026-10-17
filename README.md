@@ -91,6 +91,7 @@ The 1,176 unique static instances use parent scales N20 and N50. Some pickup–d
 | [Problem specification](docs/PROBLEM_SPEC_V1.md) | Exact objective, constraint, output and validation semantics |
 | [Schemas](schemas/) · [Catalog](catalog/) | Machine-readable contracts, atoms and presets |
 | [Pilot results](downloads/PILOT_RESULTS.csv) | 68 traditional-solver development conditions |
+| [Collection progress](downloads/COLLECTION_PROGRESS.json) · [coverage](downloads/COLLECTION_COVERAGE.csv) | Fresh dynamic collection status and per-city coverage snapshot |
 | [Checksums](downloads/SHA256.json) · [Data card](docs/DATA_CARD.md) | Integrity, source distinctions and limitations |
 
 **Download verification** (Python standard library only; no API calls):
@@ -103,7 +104,24 @@ The verifier checks file hashes, archive shape, all 1,176 task input pairs and c
 
 ### Fresh Dynamic v1: collection design
 
-**Collection window:** 15–28 October 2026 inclusive, `Asia/Shanghai`. Collection is **in progress** — 300 of 1,680 city-time frames (day 3 of 14) have been collected as of 17 October 2026.
+**Collection window:** 15–28 October 2026 inclusive, `Asia/Shanghai`. Collection is **in progress** (day 3 of 14).
+
+**Current progress** (snapshot: 17 October 2026):
+
+| Metric | Value |
+|---|---|
+| City-time frames collected | **300 / 1,680** (17.9%) |
+| OD-time values collected | 11,940,000 / 66,864,000 |
+| Cities covered | 12 / 12 (25 frames each) |
+| Provider quota used / remaining | 124,830 / 566,518 |
+
+| Day | Frames collected |
+|---|---|
+| 15 Oct 2026 | 120 |
+| 16 Oct 2026 | 120 |
+| 17 Oct 2026 | 60 (in progress) |
+
+Machine-readable snapshots: [collection progress](downloads/COLLECTION_PROGRESS.json) · [per-city coverage](downloads/COLLECTION_COVERAGE.csv).
 
 ```text
 03:30  07:00  08:00  09:00  12:30

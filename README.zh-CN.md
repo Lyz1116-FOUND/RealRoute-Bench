@@ -75,7 +75,8 @@ $$\mathcal W_c=(G_c,V_c,D_c^{\mathrm{OSM}},T_c^{\mathrm{static}},\{T_{c,t}^{\mat
 - [静态输入压缩包](downloads/static_public_v1.zip)：1176对base／scenario，不含私有witness。
 - [静态分区](downloads/STATIC_SPLIT.json)：训练588、验证196、测试392，同城所有嵌套规模及派生场景绑定同分区。
 - [问题规范](docs/PROBLEM_SPEC_V1.md) · [Schema](schemas/) · [约束目录](catalog/)。
-- [传统基线开发结果](downloads/PILOT_RESULTS.csv) · [校验哈希](downloads/SHA256.json) · [数据卡](docs/DATA_CARD.md)。
+- [传统基线开发结果](downloads/PILOT_RESULTS.csv) · [采集进度](downloads/COLLECTION_PROGRESS.json) · [覆盖统计](downloads/COLLECTION_COVERAGE.csv)。
+- [校验哈希](downloads/SHA256.json) · [数据卡](docs/DATA_CARD.md)。
 
 使用Python标准库即可验证下载包，不调用任何API：
 
@@ -87,7 +88,24 @@ python3 scripts/verify_downloads.py
 
 ### 高德Dynamic v1时间设计
 
-计划为**2026年10月15—28日连续14天**，时区`Asia/Shanghai`，每天10帧；采集进行中，截至2026-10-17已获得300/1680帧（第3/14天）：
+计划为**2026年10月15—28日连续14天**，时区`Asia/Shanghai`，每天10帧；采集进行中（第3/14天）。
+
+**当前进度**（快照：2026-10-17）：
+
+| 指标 | 数值 |
+|---|---|
+| 已采集城市时刻帧 | **300 / 1680**（17.9%） |
+| 已采集 OD-time 值 | 11,940,000 / 66,864,000 |
+| 覆盖城市 | 12 / 12（每城 25 帧） |
+| 额度已用 / 剩余 | 124,830 / 566,518 |
+
+| 日期 | 采集帧数 |
+|---|---|
+| 2026-10-15 | 120 |
+| 2026-10-16 | 120 |
+| 2026-10-17 | 60（进行中） |
+
+机器可读快照：[采集进度](downloads/COLLECTION_PROGRESS.json) · [逐城覆盖](downloads/COLLECTION_COVERAGE.csv)。
 
 ```text
 03:30  07:00  08:00  09:00  12:30
