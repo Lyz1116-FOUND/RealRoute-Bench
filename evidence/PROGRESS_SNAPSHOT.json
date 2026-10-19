@@ -1,8 +1,8 @@
 {
-  "snapshot_at": "2026-10-19T06:11:10.976203+00:00",
+  "snapshot_at": "2026-10-19T06:15:45.768891+00:00",
   "collection": {
     "schema": "realroute.collection_progress.v2",
-    "snapshot_at": "2026-10-19T06:11:10.976203+00:00",
+    "snapshot_at": "2026-10-19T06:15:45.768891+00:00",
     "timezone": "Asia/Shanghai",
     "series_id": "realroute-fresh-20261015-mac-v1",
     "window": {
@@ -152,15 +152,15 @@
     "freeze_id": "289411b38c9a5cdbcac2f3ce88257a527fc64ce21d0d89b00698d70ba99c3eed",
     "run_id": "7509dc821d481d5d8849",
     "planned_jobs": 5880,
-    "trusted_terminal_jobs": 2515,
+    "trusted_terminal_jobs": 2519,
     "planned_instances": 1176,
-    "instances_with_any_terminal": 522,
-    "instances_all_jobs_terminal": 484,
+    "instances_with_any_terminal": 523,
+    "instances_all_jobs_terminal": 486,
     "instances_exact": 183,
     "instances_bks": 334,
-    "instances_without_valid_reference_so_far": 5,
+    "instances_without_valid_reference_so_far": 6,
     "integrity_issue_counts": {},
-    "completion_percentage": 42.77,
+    "completion_percentage": 42.84,
     "formal_ranking_claim": false,
     "private_solutions_exported": false
   },

@@ -26,18 +26,18 @@ Demand, windows, service, prizes and fleets are **synthetic operational attribut
 
 ## Dated progress
 
-Captured at `2026-10-19T06:11:10.976203+00:00` (UTC). The acquisition window is **15–28 October 2026**, China local time.
+Captured at `2026-10-19T06:15:45.768891+00:00` (UTC). The acquisition window is **15–28 October 2026**, China local time.
 
 | Component | Current evidence |
 | --- | --- |
 | Recorded production slots | **540 / 1,680 (32.1%)**; per-frame quality status is retained in the machine-readable snapshot |
-| Static-reference jobs | **2515 / 5,880** trusted terminal jobs; all jobs terminal for **484 / 1,176** tasks |
+| Static-reference jobs | **2519 / 5,880** trusted terminal jobs; all jobs terminal for **486 / 1,176** tasks |
 | Reference coverage so far | 183 tasks with EXACT references; 334 with BKS references; interim snapshot |
 | Engineering verification | **431 tests, zero failures, 1 skipped**; not completion of formal experiments |
 | Deterministic modeling control | 68 training conditions passed the semantic gate; two renderings checked for all 14 atoms; no new model calls |
 | LLM preparation | 46 historical records replayed by layer; disabled balanced development designs of 12 or 48 calls |
 
-**Quarantined and imputed frames do not count as complete REAL matrices.** Repeated seeds do not create independent instances. EXACT and BKS are separate, and interim results are not rankings.
+The collection count reports recorded production slots; completeness and provenance are defined in the machine-readable snapshot and data card. Repeated seeds do not create independent instances. EXACT and BKS are separate, and interim results are not rankings.
 
 [Progress evidence](evidence/PROGRESS_SNAPSHOT.json) · [Collection snapshot](downloads/COLLECTION_PROGRESS.json) · [City/day coverage](downloads/COLLECTION_COVERAGE.csv) · [Offline preparation](docs/OFFLINE_PREPARATION.md)
 

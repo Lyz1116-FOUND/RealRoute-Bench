@@ -1,6 +1,6 @@
 # Status · 2026-10-19
 
-Captured at `2026-10-19T06:11:10.976203+00:00`. This is a dated aggregate snapshot; see [machine-readable evidence](../evidence/PROGRESS_SNAPSHOT.json).
+Captured at `2026-10-19T06:15:45.768891+00:00`. This is a dated aggregate snapshot; see [machine-readable evidence](../evidence/PROGRESS_SNAPSHOT.json).
 
 | Component | State |
 | --- | --- |
@@ -9,7 +9,7 @@ Captured at `2026-10-19T06:11:10.976203+00:00`. This is a dated aggregate snapsh
 | Original static inputs | 1,176 unique; 588/196/392 city-held-out assignments |
 | Separate composition inputs | 1,512; 1224/72/216 interaction assignments; 14 atoms |
 | Fresh dynamic acquisition | 522 complete production PASS, 18 quarantined; 31.1% of 1680 complete |
-| Static reference execution | 2515/5880 trusted terminal jobs; 484 tasks have every job terminal |
+| Static reference execution | 2519/5880 trusted terminal jobs; 486 tasks have every job terminal |
 | Reference coverage so far | EXACT 183; BKS 334; interim, not a ranking |
 | Offline preparation | v1.1 integrated; 431 tests, zero failures, 1 skipped |
 | Deterministic control | 68/68 train conditions passed; 14-atom public training coverage separately checked |
