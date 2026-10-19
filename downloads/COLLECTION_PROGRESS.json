@@ -1,104 +1,126 @@
 {
-  "schema": "collection-progress-v1",
-  "snapshot_at": "2026-10-17T15:52:43.581815+08:00",
+  "schema": "realroute.collection_progress.v2",
+  "snapshot_at": "2026-10-19T06:11:10.976203+00:00",
+  "timezone": "Asia/Shanghai",
+  "series_id": "realroute-fresh-20261015-mac-v1",
   "window": {
-    "timezone": "Asia/Shanghai",
     "start": "2026-10-15",
     "end": "2026-10-28",
     "days_planned": 14,
     "slots_per_day": 10,
     "cities": 12,
     "nodes_per_city": 200,
-    "od_entries_per_frame": 39800,
     "frames_planned": 1680,
-    "od_time_values_planned": 66864000
+    "od_entries_per_complete_frame": 39800
   },
   "progress": {
-    "current_day": 3,
-    "frames_collected": 300,
-    "od_time_values_collected": 11940000,
-    "completion_pct": 17.86
+    "current_day": 5,
+    "complete_real_pass_frames": 522,
+    "quarantined_frames": 18,
+    "recorded_slots": 540,
+    "states": {
+      "PASS": 522,
+      "QUARANTINE": 18
+    },
+    "recorded_slot_percentage": 32.14,
+    "complete_frame_percentage": 31.07,
+    "complete_frame_od_time_values": 20775600,
+    "final_dynamic_release_completed": false
   },
   "daily": [
     {
       "date": "2026-10-15",
-      "frames_collected": 120
+      "complete_real_pass_frames": 116,
+      "quarantined_frames": 4,
+      "recorded_slots": 120
     },
     {
       "date": "2026-10-16",
-      "frames_collected": 120
+      "complete_real_pass_frames": 106,
+      "quarantined_frames": 14,
+      "recorded_slots": 120
     },
     {
       "date": "2026-10-17",
-      "frames_collected": 60
+      "complete_real_pass_frames": 120,
+      "quarantined_frames": 0,
+      "recorded_slots": 120
+    },
+    {
+      "date": "2026-10-18",
+      "complete_real_pass_frames": 120,
+      "quarantined_frames": 0,
+      "recorded_slots": 120
+    },
+    {
+      "date": "2026-10-19",
+      "complete_real_pass_frames": 60,
+      "quarantined_frames": 0,
+      "recorded_slots": 60
     }
   ],
   "cities": [
     {
       "city": "beijing",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 43,
+      "quarantined_frames": 2
     },
     {
       "city": "shanghai",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 43,
+      "quarantined_frames": 2
     },
     {
       "city": "xian",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 44,
+      "quarantined_frames": 1
     },
     {
       "city": "chongqing",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 43,
+      "quarantined_frames": 2
     },
     {
       "city": "chengdu",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 44,
+      "quarantined_frames": 1
     },
     {
       "city": "hangzhou",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 44,
+      "quarantined_frames": 1
     },
     {
       "city": "wuhan",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 42,
+      "quarantined_frames": 3
     },
     {
       "city": "xiamen",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 44,
+      "quarantined_frames": 1
     },
     {
       "city": "sanya",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 44,
+      "quarantined_frames": 1
     },
     {
       "city": "yiwu",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 44,
+      "quarantined_frames": 1
     },
     {
       "city": "dunhuang",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 44,
+      "quarantined_frames": 1
     },
     {
       "city": "anji",
-      "frames_collected": 25,
-      "od_entries_collected": 995000
+      "complete_real_pass_frames": 43,
+      "quarantined_frames": 2
     }
   ],
-  "quota": {
-    "monthly_capacity": 691348,
-    "used": 124830,
-    "remaining": 566518
-  },
-  "note": "Frames are counted as collected traffic observations on the frozen v3 nodes. Raw provider responses, account identities, credentials and per-account quota ledgers are excluded from this snapshot."
+  "counting_rule": "Only production PASS frames count as complete REAL matrices. Quarantined and imputed values do not count as complete REAL frames.",
+  "scope": "Dated aggregate snapshot, not a live monitor; no raw provider data, account identities, balances or credentials."
 }

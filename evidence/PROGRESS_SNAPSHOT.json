@@ -1,0 +1,196 @@
+{
+  "snapshot_at": "2026-10-19T06:11:10.976203+00:00",
+  "collection": {
+    "schema": "realroute.collection_progress.v2",
+    "snapshot_at": "2026-10-19T06:11:10.976203+00:00",
+    "timezone": "Asia/Shanghai",
+    "series_id": "realroute-fresh-20261015-mac-v1",
+    "window": {
+      "start": "2026-10-15",
+      "end": "2026-10-28",
+      "days_planned": 14,
+      "slots_per_day": 10,
+      "cities": 12,
+      "nodes_per_city": 200,
+      "frames_planned": 1680,
+      "od_entries_per_complete_frame": 39800
+    },
+    "progress": {
+      "current_day": 5,
+      "complete_real_pass_frames": 522,
+      "quarantined_frames": 18,
+      "recorded_slots": 540,
+      "states": {
+        "PASS": 522,
+        "QUARANTINE": 18
+      },
+      "recorded_slot_percentage": 32.14,
+      "complete_frame_percentage": 31.07,
+      "complete_frame_od_time_values": 20775600,
+      "final_dynamic_release_completed": false
+    },
+    "daily": [
+      {
+        "date": "2026-10-15",
+        "complete_real_pass_frames": 116,
+        "quarantined_frames": 4,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-16",
+        "complete_real_pass_frames": 106,
+        "quarantined_frames": 14,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-17",
+        "complete_real_pass_frames": 120,
+        "quarantined_frames": 0,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-18",
+        "complete_real_pass_frames": 120,
+        "quarantined_frames": 0,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-19",
+        "complete_real_pass_frames": 60,
+        "quarantined_frames": 0,
+        "recorded_slots": 60
+      }
+    ],
+    "cities": [
+      {
+        "city": "beijing",
+        "complete_real_pass_frames": 43,
+        "quarantined_frames": 2
+      },
+      {
+        "city": "shanghai",
+        "complete_real_pass_frames": 43,
+        "quarantined_frames": 2
+      },
+      {
+        "city": "xian",
+        "complete_real_pass_frames": 44,
+        "quarantined_frames": 1
+      },
+      {
+        "city": "chongqing",
+        "complete_real_pass_frames": 43,
+        "quarantined_frames": 2
+      },
+      {
+        "city": "chengdu",
+        "complete_real_pass_frames": 44,
+        "quarantined_frames": 1
+      },
+      {
+        "city": "hangzhou",
+        "complete_real_pass_frames": 44,
+        "quarantined_frames": 1
+      },
+      {
+        "city": "wuhan",
+        "complete_real_pass_frames": 42,
+        "quarantined_frames": 3
+      },
+      {
+        "city": "xiamen",
+        "complete_real_pass_frames": 44,
+        "quarantined_frames": 1
+      },
+      {
+        "city": "sanya",
+        "complete_real_pass_frames": 44,
+        "quarantined_frames": 1
+      },
+      {
+        "city": "yiwu",
+        "complete_real_pass_frames": 44,
+        "quarantined_frames": 1
+      },
+      {
+        "city": "dunhuang",
+        "complete_real_pass_frames": 44,
+        "quarantined_frames": 1
+      },
+      {
+        "city": "anji",
+        "complete_real_pass_frames": 43,
+        "quarantined_frames": 2
+      }
+    ],
+    "counting_rule": "Only production PASS frames count as complete REAL matrices. Quarantined and imputed values do not count as complete REAL frames.",
+    "scope": "Dated aggregate snapshot, not a live monitor; no raw provider data, account identities, balances or credentials."
+  },
+  "static": {
+    "cities": 12,
+    "frozen_endpoints": 2400,
+    "matrix_pairs": 48,
+    "unique_instances": 1176,
+    "split": {
+      "train": 588,
+      "validation": 196,
+      "test": 392
+    }
+  },
+  "composition": {
+    "instances": 1512,
+    "split": {
+      "test": 216,
+      "train": 1224,
+      "validation": 72
+    },
+    "freeze_id": "c226b4893ced13c8af3f8642d18f5bd08a664c149d50c40d5593396a0895688a",
+    "formal_model_experiments_completed": false
+  },
+  "references": {
+    "status": "INTERIM",
+    "freeze_id": "289411b38c9a5cdbcac2f3ce88257a527fc64ce21d0d89b00698d70ba99c3eed",
+    "run_id": "7509dc821d481d5d8849",
+    "planned_jobs": 5880,
+    "trusted_terminal_jobs": 2515,
+    "planned_instances": 1176,
+    "instances_with_any_terminal": 522,
+    "instances_all_jobs_terminal": 484,
+    "instances_exact": 183,
+    "instances_bks": 334,
+    "instances_without_valid_reference_so_far": 5,
+    "integrity_issue_counts": {},
+    "completion_percentage": 42.77,
+    "formal_ranking_claim": false,
+    "private_solutions_exported": false
+  },
+  "offline_preparation": {
+    "version": "realroute.offline_integration.v1.1",
+    "full_tests": 431,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "control_conditions": 68,
+    "control_gate_accepted": 68,
+    "historical_replay_records": 46,
+    "new_model_api_calls": 0,
+    "candidate_calls": [
+      12,
+      48
+    ],
+    "llm_execution_enabled": false
+  },
+  "temporal_snapshot": {
+    "source": "offline integration acceptance snapshot",
+    "matched_tasks": 384,
+    "source_qualified_tasks": 384,
+    "oracle_is_mathematical_bound": false,
+    "formal_ranking_claim": false
+  },
+  "limitations": [
+    "Fresh sequence and final dynamic split are incomplete.",
+    "Reference preparation is interim, not a solver ranking.",
+    "Historical model fields do not prove fixed provider model identity.",
+    "Imputation is offline synthetic reconstruction and may use later observations."
+  ]
+}

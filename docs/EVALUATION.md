@@ -1,42 +1,29 @@
-# Evaluation protocol and evidence
+# Evaluation design and current boundaries
 
-## Task identity
+BaseInstance + Scenario defines a task. An independent checker validates routes, coverage, load, timing, resources, relations and rewards, and recomputes objectives. Canonical labels do not change semantics.
 
-`BaseInstance + Scenario` determines the problem. The Scenario includes objectives, visit policy, fleet, depots, route endings, enabled atoms and exact numeric parameters. Complete semantics are in [Problem Spec v1](PROBLEM_SPEC_V1.md); its opening implementation-status wording belongs to the original definition-stage document. Current implementation status is in [STATUS](STATUS.md).
+## Separate protocols
 
-The normalizer validates schema and dependencies. The checker does not import solver code and recomputes route timing, stepwise load, required visits, relational constraints, resources and objective. A private constructive witness is never passed to evaluated models.
+- Original static city holdout: 1176 distinct tasks; 588 train / 196 validation / 392 test. City-derived scales and scenarios stay together.
+- Separate composition holdout: 1512 tasks; 1224 train / 72 validation / 216 test. City worlds are shared across interaction partitions. This does not establish joint city-and-composition generalization.
+- Final dynamic-date assignments wait for sequence QA. Missing observations remain missing; later dates cannot replace historical truth.
 
-## Traditional references
+## Output tracks
 
-Directed MILP adapters cover 14 atoms, structural axes and four objectives. The LNS is heuristic and may limit feasible-group insertion/search; construction failure does not establish infeasibility.
+Direct returns route JSON. Model returns declarative Scenario JSON, checked against the public task semantics before fixed-solver execution. A deterministic parser supplies a controlled-language baseline. None executes arbitrary generated Python.
 
-The completed pilot uses 17 Shanghai parent-N20 tasks (PDP physical N19), 5 seconds per MILP/LNS condition, one seed, four backends. It supplies 9 EXACT and 8 BKS references. A route produced by LNS can match a certified optimum, but certification comes from a separate trusted MILP bound/termination record.
+## Reporting
 
-EXACT requires trusted solver optimal termination, accepted checker solution, and reconstructed objective, solver objective and bound agreement within relative tolerance 1e-6. BKS indicates a feasible best-known route, not an optimum. Zero reference objectives have undefined relative gaps; gap direction respects minimization/maximization. Model claims/metadata cannot certify optimality.
+- Receipt and task/source identities gate trusted results. Pending or corrupt artifacts are not completed evidence.
+- Report planned, started, terminal and valid separately; distinguish pre-request blocking from actual HTTP attempts.
+- Capability support comes from public semantics, not successful solves or scheduling.
+- Primary method coverage uses the lowest predeclared seed. Any-seed coverage is labelled separately; repeated-seed paired quality uses all predeclared valid repetitions, without choosing the last or best answer.
+- Group objectives by type, unit and scale. Missing or zero references have null relative gaps. BKS comparisons disclose in-pool reference bias.
+- EXACT requires trusted optimal termination and agreement between solver objective, bound and checker. Failure is not an infeasibility proof; a feasible witness is not optimality evidence.
+- Keep first answers and checker-assisted revisions separate. Historical replays are not new model calls or Pass@1 measurements.
 
-The proposed formal reference time limits are 60 seconds for parent N20 and 300 seconds for parent N50. Full execution remains pending. A configured full Gurobi license is expired; explicit restricted-license runs can fail size limits. HiGHS is reported as its own backend. No silent fallback is labelled a Gurobi result.
+## Future snapshots
 
-## LLM tracks
+Static uses the earliest available same-day observation; Reactive uses the latest available at the decision; Oracle sees the target future matrix. Routes are scored on that common fixed future snapshot. Frame hashes, actual availability, node worlds, public scenario provenance and execution bindings are audited. No within-route time-varying routing is implied. A heuristic Oracle is not a mathematical lower bound, and negative differences remain visible.
 
-Direct receives the full public matrix and exact natural-language constraints and emits route JSON without tools. Model emits a declarative Scenario, which is normalized and compared against every numeric/semantic task parameter before a fixed solver runs. Arbitrary generated Python execution is not currently supported.
-
-Separate tracks and cohorts. Record prompt hash, renderer version, requested/actual model, thinking settings, complete answer, tokens, inference wall time and external solver wall time. First-attempt parsing/semantic/route failures and transport errors are distinct. Explicit recovery trials do not overwrite first attempts or inflate Pass@1. Unknown interrupted token usage retains budget reservations.
-
-Formal model versions, multi-instance coverage, repeats, timeout/retry policy and aggregate reporting need to be frozen. Current trial cohorts cover ATSP and ACVRPTW only and cannot establish a model ranking. Service names shared by providers do not prove identical weights or serving settings.
-
-## Future-snapshot task
-
-At decision cutoff, the solver commits a route. Every mode is scored on the same fixed designated future matrix, with public operational scenario parameters derived from static data. Static uses the same day's earliest fully available frame; Reactive the latest fully available observation; Oracle the actual future target frame. All methods must share scenario, node identity, solver and algorithmic budget.
-
-Nominal one-hour pairs: 07→08, 08→09, 16:30→17:30, 17:30→18:30. API acquisition/receipt times define availability, not just nominal slot labels. Missing pairs are excluded for every mode with explicit diagnostics. Historical diagnostic pairs are separate from the formal fresh series. No within-route weight switching and no completed predictive/JEPA experiments are claimed.
-
-## Formal evaluation preparation still required
-
-1. Freeze model/track/task/repetition/resource protocols before full test execution.
-2. Run all static references with objective, bound, status, backend and independent checker records.
-3. Freeze composition holdouts, auditing induced pickup/delivery semantics and all prompt/retrieval exposure.
-4. Audit dynamic completeness, acquisition windows, node hashes and receipt-time cutoffs.
-5. Freeze dynamic date blocks and purge history/future-horizon exposure at boundaries.
-6. Run controlled full traditional/LLM/temporal experiments and report per-city/constraint/date outcomes and uncertainty.
-
-ODs in one frame are spatial samples, not independent time samples. Statistical resampling should reflect city/date/instance grouping. Baidu context is optional auxiliary data; missing context does not automatically invalidate a complete AMap matrix. Formal leaderboard submission/ranking is not implemented.
+Formal model identity, serving settings, tools, usage and budgets still need verification. Interim figures and engineering tests do not establish a formal leaderboard or statistical ranking.

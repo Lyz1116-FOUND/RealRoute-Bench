@@ -1,26 +1,20 @@
-# Current-stage status · 2026-10-17
+# Status · 2026-10-19
 
-| Component | State | Evidence / boundary |
-|---|---|---|
-| Problem Spec / 14 atoms / 11 templates / 6 presets | Implemented | Frozen definition and machine-readable catalog |
-| Normalizer / independent checker | Implemented and tested | Engineering delivery records; no solver imports in checker |
-| 12-city OSM v3 / 2,400 endpoints | Frozen | Node identities and static matrices remain immutable |
-| Local road/OSRM reconstruction | Completed | Reproduces frozen duration matrices; not original server binary identity |
-| Static scenarios | 1,176 unique inputs | Real spatial base; synthetic operational attributes |
-| Static city-held-out split | Frozen | 588 train / 196 validation / 392 test |
-| City structure metrics | Completed | Declared study-region metrics; limited raw topology semantics |
-| Protected AMap + separate Baidu collection chain | In progress (day 3/14) | 300/1,680 city-time frames collected as of 2026-10-17; runtime and quotas checked live; not a completed 14-day sequence |
-| Historical Chengdu | Native auxiliary track | Full source downloaded, 44 usable complete days; canonical v3 mapping unresolved |
-| T-Drive / DiDi canonical ingestion | Pending | No completed map-matched canonical source |
-| MILP / LNS adapters | Implemented | 17-case development pilot; licensed/full-scale coverage limitations |
-| LLM Direct / declarative Model | Implemented; actual pilots | Two task families, separate cohorts; not formal model ranking |
-| Full 1,176-instance reference run | Pending | Gurobi full license expired; HiGHS alternative explicitly labelled |
-| Unseen-composition / dynamic-date split | Pending | Static city split alone does not establish these holdouts |
-| Formal LLM / temporal results | Pending | Multi-instance repeats and full fresh-data QA still needed |
-| Arbitrary generated-code isolation | Not implemented | Current Model track is declarative JSON |
-| Predictive/JEPA and time-dependent driving | Not completed | Separate later extensions |
-| Paper / formal leaderboard / public release | Pending | Private README project page only |
+Captured at `2026-10-19T06:11:10.976203+00:00`. This is a dated aggregate snapshot; see [machine-readable evidence](../evidence/PROGRESS_SNAPSHOT.json).
 
-The prior engineering delivery recorded 183 tests passing, 156 managed core files and 492 v3 files verified. These are dated verification results, not a claim that every future change has already passed the same checks.
+| Component | State |
+| --- | --- |
+| Frozen definition, normalizer, independent checker | Implemented; original semantics unchanged |
+| OSM/OSRM foundation | 12 cities, 2,400 frozen endpoints, 48 matrix pairs |
+| Original static inputs | 1,176 unique; 588/196/392 city-held-out assignments |
+| Separate composition inputs | 1,512; 1224/72/216 interaction assignments; 14 atoms |
+| Fresh dynamic acquisition | 522 complete production PASS, 18 quarantined; 31.1% of 1680 complete |
+| Static reference execution | 2515/5880 trusted terminal jobs; 484 tasks have every job terminal |
+| Reference coverage so far | EXACT 183; BKS 334; interim, not a ranking |
+| Offline preparation | v1.1 integrated; 431 tests, zero failures, 1 skipped |
+| Deterministic control | 68/68 train conditions passed; 14-atom public training coverage separately checked |
+| Historical reply replay | 46 records; parse/status/checker/semantic layers separated; optimizer not rerun |
+| Formal LLM execution | Disabled; small balanced development designs await external verification |
+| Final dynamic split, prediction/JEPA, formal leaderboard | Pending |
 
-This snapshot does not copy collection control state, credentials or private reference answers. It must not be used as an automatic scheduler status report.
+The original v1 formal manifest's composition flag does not describe the separate v2 composition cohort. Neither frozen inputs nor a passing test suite means experiments are complete. Private witnesses and detailed reference answers are not exported.

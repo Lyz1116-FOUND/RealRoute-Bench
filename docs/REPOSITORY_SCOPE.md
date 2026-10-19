@@ -1,23 +1,25 @@
-# Repository scope
+# Repository contents and storage boundaries
 
-This repository is a **curated project-page snapshot**, not the active research workspace or an automatic raw-data backup.
+This private repository currently contains a **curated project-page snapshot**. Updating progress here does not back up the executable workspace.
+
+| Location | What belongs there |
+| --- | --- |
+| This curated repository | Bilingual overview, dated aggregate progress, schemas/catalog, frozen specification, source attribution, small figures, approved input-only samples, checksums and research limitations |
+| A private research-code repository or separately reviewed code snapshot | Source, tests, solver adapters, sanitized configuration templates, dependency locks, versioned task/protocol manifests, reproduction commands and small public fixtures |
+| Versioned storage / backup | Large OSM/OSRM assets, raw traffic archives, complete processed matrices, run artifacts and data inventories; access and distribution policy per source |
+| Local secret store | API keys, authorization material, passwords, license files and operational credentials; never Git, including private Git |
+
+Private reference answers, certificates and construction witnesses require a privileged evaluation boundary. They must never enter model prompts, few-shot examples or retrieval. Keeping Git private does not remove this separation.
+
+Do not upload virtual environments, caches, national PBF files or continuously changing SQLite ledgers into the README repository. Do not assume that a private repository makes a deployed website private. Keep any future public site a separate, explicitly reviewed export.
+
+Suggested research-code layout when that scope is explicitly adopted:
 
 ```text
-RealRoute-Bench/
-├── README.md                 English project page
-├── README.zh-CN.md           Chinese project page
-├── ATTRIBUTION.md            Source-specific attribution
-├── assets/                   Authored overview SVGs, frozen-node maps, measured plot
-├── docs/                     Problem Spec, data card, evaluation, status and design audit
-├── catalog/                  Constraint atoms, objectives, templates and presets
-├── schemas/                  Data and solution contracts
-├── downloads/                Input-only static bundle, split, metric/pilot CSVs and hashes
-├── evidence/                 Curated delivery/cohort summaries and file manifest
-└── scripts/                  Offline download verification
+src/  extensions/  scripts/  tests/
+schemas/  catalog/  config/       # sanitized templates and scientific configuration
+docs/  manifests/               # protocols, data versions and hashes
+pyproject.toml  requirements.lock
 ```
 
-Excluded: account keys, local credential files, SSH/passwords, Gurobi certificates, private witness routes, detailed solver proof/answer files, provider account balances, raw API responses, active scheduler state, virtual environments, national PBF and runtime routing tiles.
-
-The original frozen Problem Spec is preserved verbatim. Its opening statement reflects the definition-stage date; read STATUS.md for current implementation progress. Core workspace files and v3 data are not rewritten by this page build.
-
-Update this repository with explicit reviewed artifact snapshots; do not mirror the entire live research folder or expose it through GitHub Pages. Repository visibility is required to remain private.
+This update preserves the existing repository scope and privacy. It does not silently turn the curated page into a full source backup or publish a site.
