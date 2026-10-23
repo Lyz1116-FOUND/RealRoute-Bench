@@ -2,6 +2,8 @@
 
 # RealRoute-Bench
 
+**Method-provenance amendment · 2026-10-24:** The custom heuristic is not a verified reproduction of a published algorithm; its public results have been withdrawn and mixed-pool reference summaries are withheld. The LNS framework itself has established literature. [Audit and disposition](docs/LNS_IMPLEMENTATION_AUDIT_20261024.md). Other acquisition and experiment figures below retain their historical snapshot dates; they were not refreshed in this amendment.
+
 **Can routing systems generalize across real cities, constraint compositions, and changing traffic?**
 
 [简体中文](README.zh-CN.md) · [Status](docs/STATUS.md) · [Data card](docs/DATA_CARD.md) · [Evaluation](docs/EVALUATION.md) · [Repository scope](docs/REPOSITORY_SCOPE.md)
@@ -31,8 +33,8 @@ Captured at `2026-10-19T06:15:45.768891+00:00` (UTC). The acquisition window is 
 | Component | Current evidence |
 | --- | --- |
 | Recorded production slots | **540 / 1,680 (32.1%)**; per-frame quality status is retained in the machine-readable snapshot |
-| Static-reference jobs | **2519 / 5,880** trusted terminal jobs; all jobs terminal for **486 / 1,176** tasks |
-| Reference coverage so far | 183 tasks with EXACT references; 334 with BKS references; interim snapshot |
+| Static-reference summary | Withheld pending a versioned reference-pool rebuild; historical runs are retained locally |
+| Reference publication | Custom-heuristic results withdrawn; no replacement EXACT/BKS counts claimed |
 | Engineering verification | **431 tests, zero failures, 1 skipped**; not completion of formal experiments |
 | Deterministic modeling control | 68 training conditions passed the semantic gate; two renderings checked for all 14 atoms; no new model calls |
 | LLM preparation | 46 historical records replayed by layer; disabled balanced development designs of 12 or 48 calls |
@@ -62,7 +64,7 @@ Beijing, Shanghai, Xi'an, Chongqing, Chengdu, Hangzhou, Wuhan, the declared Xiam
 | [Static inputs](downloads/static_public_v1.zip) | 1,176 base/scenario pairs, no private witnesses; parent N20/N50, with some physical N19/N49 pickup–delivery cases |
 | [Static assignments](downloads/STATIC_SPLIT.json) | 588 train / 196 validation / 392 test; city-derived inputs stay together |
 | [Frozen specification](docs/PROBLEM_SPEC_V1.md), [schemas](schemas/), [catalog](catalog/) | 14 atoms, four objectives, 11 classical templates and six original composition presets |
-| [Historical pilot](downloads/PILOT_RESULTS.csv) | 17 Shanghai development cases, not the full reference run or a leaderboard |
+| [Historical development records](downloads/PILOT_RESULTS.csv) | 51 retained greedy/Gurobi/HiGHS records; custom heuristic withdrawn; relative gaps withheld; not a leaderboard |
 | [Checksums](downloads/SHA256.json) | Download and snapshot integrity |
 
 ```sh

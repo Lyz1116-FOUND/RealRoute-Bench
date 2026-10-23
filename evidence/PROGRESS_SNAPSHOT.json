@@ -148,19 +148,10 @@
     "formal_model_experiments_completed": false
   },
   "references": {
-    "status": "INTERIM",
-    "freeze_id": "289411b38c9a5cdbcac2f3ce88257a527fc64ce21d0d89b00698d70ba99c3eed",
-    "run_id": "7509dc821d481d5d8849",
-    "planned_jobs": 5880,
-    "trusted_terminal_jobs": 2519,
-    "planned_instances": 1176,
-    "instances_with_any_terminal": 523,
-    "instances_all_jobs_terminal": 486,
-    "instances_exact": 183,
-    "instances_bks": 334,
-    "instances_without_valid_reference_so_far": 6,
-    "integrity_issue_counts": {},
-    "completion_percentage": 42.84,
+    "status": "WITHHELD_PENDING_VERSIONED_POOL_REBUILD",
+    "reason": "Historical mixed pool includes a custom heuristic without verified paper-reproduction provenance. Public method rows are withdrawn; a replacement pool has not been computed.",
+    "historical_local_runs_preserved": true,
+    "replacement_reference_counts_available": false,
     "formal_ranking_claim": false,
     "private_solutions_exported": false
   },
@@ -192,5 +183,13 @@
     "Reference preparation is interim, not a solver ranking.",
     "Historical model fields do not prove fixed provider model identity.",
     "Imputation is offline synthetic reconstruction and may use later observations."
-  ]
+  ],
+  "method_provenance_amendment": {
+    "date_jst": "2026-10-24",
+    "withdrawn_method_id": "lns",
+    "withdrawn_pilot_rows": 17,
+    "retained_pilot_rows": 51,
+    "relative_gaps_withheld": true,
+    "other_snapshot_fields_not_refreshed": true
+  }
 }
