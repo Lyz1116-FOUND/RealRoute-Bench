@@ -11,7 +11,7 @@ for name, expected in manifest['files_sha256'].items():
     path = root / name
     assert path.is_file() and not path.is_symlink(), name
     assert hashlib.sha256(path.read_bytes()).hexdigest() == expected, name
-    if path.suffix not in ['.zip', '.png']:
+    if path.suffix not in ['.zip', '.png', '.pdf']:
         text = path.read_text()
         assert not re.search(r'/(?:Users|data/route)/|sk-[A-Za-z0-9_-]{16,}|github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]{20,}|Bearer\s+[A-Za-z0-9._-]{12,}|[?&](?:key|token|api_key)=[^\s)]+', text), name
         if path.suffix == '.json':

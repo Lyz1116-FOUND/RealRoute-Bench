@@ -1,12 +1,12 @@
 {
   "schema": "realroute.public_progress.v4",
-  "snapshot_at": "2026-10-23T16:04:05.760413+00:00",
-  "snapshot_at_jst": "2026-10-24T01:04:05.760539+09:00",
+  "snapshot_at": "2026-10-23T16:47:26.493490+00:00",
+  "snapshot_at_jst": "2026-10-24T01:47:26.493593+09:00",
   "repository_visibility_observed": "public",
   "collection": {
     "schema": "realroute.collection_progress.v4",
-    "snapshot_at": "2026-10-23T16:04:05.760413+00:00",
-    "snapshot_at_jst": "2026-10-24T01:04:05.760539+09:00",
+    "snapshot_at": "2026-10-23T16:47:26.493490+00:00",
+    "snapshot_at_jst": "2026-10-24T01:47:26.493593+09:00",
     "timezone": "Asia/Shanghai",
     "series_id": "realroute-fresh-20261015-mac-v1",
     "window": {
@@ -228,9 +228,9 @@
     },
     "reference_batch": {
       "planned": 2086,
-      "receipts": 283,
+      "receipts": 312,
       "states": {
-        "COMPLETED": 283
+        "COMPLETED": 312
       },
       "receipt_errors": [],
       "instances": 432,
@@ -304,7 +304,7 @@
     "focused_provenance_tests_passed": 8,
     "frozen_originals_match": true,
     "provider_duration_mask_hash_errors": 0,
-    "managed_release_drift_count": 9,
+    "managed_release_drift_count": 14,
     "current_global_release_lock_pass_claimed": false
   },
   "agent_systems": {
@@ -321,6 +321,15 @@
     "withdrawn_pilot_rows": 17,
     "retained_pilot_rows": 51,
     "relative_gaps_withheld": true
+  },
+  "research_report": {
+    "format": "Complete research technical report",
+    "sections": 16,
+    "display_equations": 23,
+    "tables": 10,
+    "self_contained": true,
+    "historical_method_experiments_distinguished_from_new_benchmark": true,
+    "includes_pdf_and_latex": true
   },
   "limitations": [
     "Provider OD estimates are not measured vehicle trips.",

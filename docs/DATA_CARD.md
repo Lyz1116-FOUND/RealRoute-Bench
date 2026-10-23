@@ -1,6 +1,6 @@
 # Data card · 2026-10-24
 
-Snapshot: 2026-10-24T01:04:05.760539+09:00 (Japan time). Public research preview; final dynamic release and date assignments remain incomplete.
+Snapshot: 2026-10-24T01:47:26.493593+09:00 (Japan time). Public research preview; final dynamic release and date assignments remain incomplete.
 
 ## Sources
 

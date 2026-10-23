@@ -6,7 +6,7 @@
 
 [中文](README.zh-CN.md) · [Status](docs/STATUS.md) · [Full report (Chinese)](docs/GROUP_SUMMARY_20261024.md) · [Data card](docs/DATA_CARD.md) · [Method coverage](docs/METHOD_COVERAGE.md)
 
-**Research preview. Captured at 2026-10-24T01:04:05.760539+09:00 (Japan time).** This public repository contains curated inputs, documentation, and aggregate evidence. It is not an executable workspace backup or a completed leaderboard.
+**Research preview. Captured at 2026-10-24T01:47:26.493593+09:00 (Japan time).** This public repository contains curated inputs, documentation, and aggregate evidence. It is not an executable workspace backup or a completed leaderboard.
 
 ## Foundation and provenance
 
@@ -24,7 +24,7 @@ OSM provides spatial sources; OSRM computes profile-derived static estimates; AM
 | Derived/reconstructed references | 58; excluded from nominal acquisition counts |
 | All local frame attempts | 1,119, including 81 quarantined attempts; includes commissioning and unused attempts |
 | Historical static candidate jobs | 5,880/5,880 results with matching receipts; mixed-pool quality summary withheld |
-| New composition candidate batch | 283/2,086 jobs; job completion is not public-reference eligibility |
+| New composition candidate batch | 312/2,086 jobs; job completion is not public-reference eligibility |
 | Spark development pilot | 64 requests; first attempts 9/48 valid, added repetitions 5/16 valid; no model ranking |
 | Engineering | Latest archived full suite: 541 tests, 0 failures, 2 skipped. This update: 8 focused provenance tests; full suite not rerun |
 

@@ -1,0 +1,1354 @@
+\documentclass[UTF8,10pt,a4paper,fontset=fandol]{ctexart}
+\usepackage{amsmath,amssymb,geometry,booktabs,longtable,array,enumitem,fancyhdr,hyperref,xcolor,graphicx}
+\geometry{left=21mm,right=21mm,top=21mm,bottom=22mm,headheight=14pt}
+\definecolor{ink}{HTML}{193B4C}
+\definecolor{accent}{HTML}{125E68}
+\hypersetup{colorlinks=true,linkcolor=ink,pdfauthor={RealRoute-Bench Research},pdftitle={RealRoute-Bench Research Technical Report}}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{3.5pt}
+\linespread{1.2}
+\setlength{\emergencystretch}{3em}
+\sloppy
+\setcounter{tocdepth}{2}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{ink}RealRoute-Bench}
+\fancyhead[R]{\small 研究设计与实现技术报告}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\ctexset{section={format=\Large\bfseries\color{accent},beforeskip=20pt,afterskip=10pt},subsection={format=\large\bfseries\color{ink},beforeskip=15pt,afterskip=6pt}}
+\setlist[enumerate]{leftmargin=2.5em,itemsep=3pt,topsep=5pt}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\begin{document}
+
+
+\begin{center}{\LARGE\bfseries\color{ink}RealRoute-Bench\par}\vspace{5mm}
+
+{\Large\bfseries 真实城市路由的统一任务构建、可信评测\\与未来决策表示研究\par}\vspace{5mm}
+
+{\large 研究技术报告 · 组内交流稿\par}\vspace{2mm}
+
+2026 年 10 月 24 日\end{center}\vspace{3mm}
+
+\textbf{研究技术报告 · 组内交流稿 · 2026年10月24日} \textbf{本轮工程进度核验：2026-10-24 01:47:26（日本时间，JST）} \textbf{研究范围：数据与任务体系、精确和近似求解、神经与语言模型评测、RRT–JEPA–LoRA 方法线及后续实验}
+
+
+\section*{摘要}
+
+\addcontentsline{toc}{section}{摘要}
+
+城市路由研究同时面对成本真实性、业务约束多样性与信息随时间变化三个问题。欧氏点集上的路线求解能力不能直接替代真实有向道路成本下的表现；记住经典问题名称不能证明理解了新约束组合；在未来交通矩阵上事后求解，也不能证明系统能在当前时刻提前规划。本工作因此将研究对象定义为：在明确的数据来源、任务语义和信息可见性约束下，系统能否稳定交付可行且高质量的路由决策，并在换城市、换约束交互和换时间状态时保持能力。
+
+
+我们构建以 BaseInstance 与 Scenario 分离为基础的任务表示，统一四类目标、14 个约束/\allowbreak{}属性原子及闭合、固定终点、自由终点三类路线语义；以独立 checker 重算可行性与目标，避免求解器自报结果成为唯一依据。数据层使用 12 城、2,400 个固定公共道路访问点，构建四级嵌套有向静态矩阵，并对相同端点持续查询交通感知 OD 预计耗时。需求、时间窗、车队、收益和关系等业务属性通过可复现规则生成，因此任务性质是“真实道路成本底座与合成业务规则结合的半合成任务”，不是实采订单集合。任务层已形成 1,176 道城市留出静态题和 1,512 道全原子组合题，分别检验地理迁移与同底座上的新交互。
+
+
+当前静态历史批次 5,880 个作业已有结果及匹配收据，但其中包含已撤下的自研 LNS，故不继续发布原混合池的 EXACT/\allowbreak{}BKS 数量和相关 gap。动态生产账本已记录 1,080/\allowbreak{}1,680 个城市时段；逐项来源核对后，原时段 provider 完整帧 1005 个、错时恢复 provider 帧 17 个、派生/\allowbreak{}重建引用 58 个。Spark 小样实际执行 64 次请求，首答有效 9/\allowbreak{}48，追加重复有效 5/\allowbreak{}16，当前证据主要支持失败机制分析。缺失重建在人工遮蔽回放中改善了误差，但实际缺失格没有真值，不能将其改称真实采集。
+
+
+方法研究线已有冻结求解器、rank-4 LoRA、固定 teacher 的未来 latent 预测和闭环路线记忆开发实验。历史结果显示，记忆与预算调度的作用比目前可归因于 JEPA 的增量更稳定；新 benchmark 上的正式未来快照比较与 JEPA/\allowbreak{}LoRA 独立确认尚未完成。本文给出完整数学定义、数据构建与重建方法、基线准入和测评方案、现有结果边界，以及按科学问题推进的后续实验计划。
+
+
+\textbf{关键词：} 真实道路路由；约束组合泛化；混合整数规划；神经组合优化；LLM；未来快照决策；JEPA；LoRA；数据来源审计
+
+
+\clearpage\begingroup\small\linespread{1.05}\selectfont\tableofcontents\endgroup\clearpage
+
+\section*{1 引言：研究目标与总体逻辑}
+
+\addcontentsline{toc}{section}{1 引言：研究目标与总体逻辑}
+
+\subsection*{1.1 问题从哪里来}
+
+\addcontentsline{toc}{subsection}{1.1 问题从哪里来}
+
+路径规划的实际困难并不只是从若干点中寻找一条短回路。一方面，真实城市的单行线、转向规则、路网形态与交通状态使成本矩阵具有方向性；用两个坐标的直线距离替代道路出行成本，会同时改变目标函数、邻域收益与策略应学习的结构。另一方面，业务规则通常以组合形式出现：同一客户集合可能要求容量、服务时间、先后关系和可选访问，也可能改变车辆、仓库或路线终点。最后，提前规划面对的是未完全可见的未来成本，当前最短路线未必在执行时仍好。
+
+
+我们将这些困难拆成可区分的研究问题，而不是把所有变化混入一个总分。空间轨研究模型在未见城市和规模下的迁移；组合轨研究已知规则在未见交互中的应用；时间轨研究截至决策时刻的信息是否能改善未来执行。三者可以组合成后续更强的评测，但当前独立轨道的结果不自动构成联合泛化证据。
+
+
+已有 CVRP 基准强调实例结构、规模和难度的系统组织[1]；神经构造、神经搜索与大邻域搜索分别代表不同的求解范式[2–5]。本工作的重点是建立这些方法在真实有向成本、统一业务语义和受控信息边界下可比较的实验条件。当前不宣称“首次统一所有路由问题”，也不预设增加 LLM 或 JEPA 模块必然更优。
+
+
+\subsection*{1.2 四个可检验问题}
+
+\addcontentsline{toc}{subsection}{1.2 四个可检验问题}
+
+第一个问题是\textbf{语义正确性}：系统是否真正满足用户指定的目标、访问要求与约束，而不只是给出看起来像路线的输出？第二个问题是\textbf{优化能力}：通过可行性检查后，在相同时间与搜索机会下，其解距可用参考有多远？第三个问题是\textbf{泛化来源}：收益来自道路结构、训练暴露、已见组合或额外求解预算中的哪一项？第四个问题是\textbf{未来信息的决策价值}：历史状态是否提供超出 persistence、简单矩阵预测和历史路线复用的增量？
+
+
+这四个问题形成依赖关系。若模型常常误解约束，不能只对其少量有效解报告漂亮的平均成本；若参考池不可靠，不能用一个精确到小数点后的 gap 掩盖参考的不确定性；若未来矩阵被用于选路线，不能把结果解释为预测能力。研究设计优先解决这些前置问题，再讨论复杂模型的收益。
+
+
+\subsection*{1.3 总体链路与当前交付}
+
+\addcontentsline{toc}{subsection}{1.3 总体链路与当前交付}
+
+完整链路是：真实地点和道路来源形成稳定节点与有向矩阵；Scenario 在其上定义任务；不同系统交付 Solution 或声明式模型；独立 checker 重算状态和目标；版本化结果池提供可追踪的参考；统计层按城市、父底座或城市日期聚合。时间轨在这条链上增加 actual observed time、available time 与未来目标快照，研究方法线再增加表示预测、候选生成、排序和闭环记忆。
+
+
+本报告将“已实现代码”“已有运行产物”“已通过专项验证”“研究设想”分别表述。存在接口不代表全量实验完成；批次终止不代表全部方法通过准入；旧数据上的正结果不代表新城市确认。现阶段交付的核心是可运行的数据—任务—求解—验收体系，以及能够指出下一步应如何证伪方法主张的实验框架。
+
+
+\section*{2 统一问题定义与数学语义}
+
+\addcontentsline{toc}{section}{2 统一问题定义与数学语义}
+
+\subsection*{2.1 底座、场景与解}
+
+\addcontentsline{toc}{subsection}{2.1 底座、场景与解}
+
+一个实例写为：
+
+
+\begin{equation}
+\mathcal I=(\mathcal B,\mathcal S),\qquad
+\mathcal B=(V,C,T,L,\mathcal P,\mathcal A).
+\end{equation}
+
+其中 V 是具有稳定顺序的物理节点，C、T、L 分别为有向成本、耗时与距离矩阵，P 表示来源，A 表示观测与可用时间等元信息。Scenario 包括访问集合、目标、车辆、仓库、终点模式、原子及参数。C 可以显式别名为秒制 T，但必须声明；L 始终保留物理距离语义，不因求解接口方便而换成耗时。
+
+
+设服务节点集合为 U，车辆集合为 K；\ensuremath{y_{i}} 表示客户是否被选择，\ensuremath{z_{k}} 表示车辆是否使用，车辆路线为从起点出发、经过若干服务节点、按终点模式结束的有序序列。每个被选择客户只能出现一次。必访点满足 \ensuremath{y_{i}}=1，可选点满足 \ensuremath{y_{i}}\ensuremath{\in}\{0,1\}。允许使用多少辆车、车辆是否同质、是否返回仓库均属于显式场景语义。
+
+
+闭合路线返回自身起点；固定终点路线到达指定真实终端；自由终点路线在最后一个服务点结束，不额外加返回边。物理 N 统计矩阵中的不同节点，闭合仓库的两次出现不是两个地点，MILP 的虚拟端点也不增加物理 N。未使用车辆不产生空路线和固定成本；但在允许全部不选的场景中，空解可能完全合法，只是优化质量较差。
+
+
+\subsection*{2.2 四类目标不能混用}
+
+\addcontentsline{toc}{subsection}{2.2 四类目标不能混用}
+
+令路线边集 \ensuremath{E_{k}} 根据终点模式确定，已用车辆固定成本为 \ensuremath{f_{k}}，客户收益为 \ensuremath{p_{i}}，漏访罚金为 \ensuremath{\rho_{i}}。总代价定义为：
+
+
+\begin{equation}
+C_{\rm total}(\pi)=
+\sum_{k\in K}\left(f_kz_k+\sum_{(i,j)\in E_k}c_{ij}\right).
+\end{equation}
+
+四类目标分别是：
+
+
+\begin{equation}
+\begin{aligned}
+&\min C_{\rm total}(\pi),\\
+&\min \left(\max_{k:z_k=1}F_k-t_{\rm origin}\right),\\
+&\max \sum_{i\in U}p_iy_i,\\
+&\min \left(w_c C_{\rm total}(\pi)+w_p\sum_{i\in U}\rho_i(1-y_i)\right).
+\end{aligned}
+\end{equation}
+
+\ensuremath{F_{k}} 是完成时刻；允许空解且全部车辆未用时，makespan 按契约取 0。makespan 使用共同时间原点，而不是把每辆车自己的持续时间取最大值；车辆出发时刻不同，两者可能给出不同排序。第四类目标中的权重是输入，不能默认成本和罚金天然同单位。max\_\allowbreak{}prize 需要资源约束限制可访问集合，否则全部访问通常会使该目标失去选择难度。
+
+
+目标方向还决定参考差的定义。对最小化任务，候选大于参考通常较差；对最大化任务恰好相反。不同单位、不同目标的原始目标值不做跨题简单平均。参考不存在或为零时，相对 gap 留空，并另报绝对差或适合该目标的尺度。
+
+
+\subsection*{2.3 时间、等待与路线资源}
+
+\addcontentsline{toc}{subsection}{2.3 时间、等待与路线资源}
+
+设车辆 k 固定出发时刻为 \ensuremath{r_{k}}，服务点 i 的服务时间为 \ensuremath{s_{i}}、时间窗为 [\ensuremath{a_{i}},\ensuremath{b_{i}}]。沿路线的服务开始时刻递推为：
+
+
+\begin{equation}
+B_{k,h}=\max\{a_{i_h},D_{k,h-1}+\tau_{i_{h-1},i_h}\},
+\qquad D_{k,h}=B_{k,h}+s_{i_h}.
+\end{equation}
+
+首段从车辆起点和 \ensuremath{r_{k}} 开始。时间窗检查 B 而不是到达时刻；提前到达可以等待，晚于 \ensuremath{b_{i}} 开始服务即违规。终点到达还受对应终端规则约束。路线时长限制使用 \ensuremath{F_{k}}-\ensuremath{r_{k}}，包含行驶、等待与服务；距离限制累加 L；成本预算按输入定义累加出行成本，不自动包含车辆固定成本。
+
+
+一个简单例子说明为何必须逐状态检查。车辆 08:00 出发，仓库到 A 需 300 秒，A 的时间窗 08:10–08:20、服务 120 秒，A 到 B 再需 240 秒。车辆 08:05 到 A 后等待 300 秒，08:10 开始、08:12 离开，08:16 到 B。如果只累加行驶耗时，就会漏掉等待与服务，共低估 420 秒，也可能把后续时间窗违规误判为可行。此例为语义演示，非实采路线结果。
+
+
+\subsection*{2.4 容量、成对访问与车辆关系}
+
+\addcontentsline{toc}{subsection}{2.4 容量、成对访问与车辆关系}
+
+普通仓库配送中，每条路线的总需求不超过车辆容量。取送则要维护路径上的载荷。令 \ensuremath{\delta}\_\allowbreak{}i 对取点为正、送点为负，载荷满足：
+
+
+\begin{equation}
+q_{k,h}=q_{k,h-1}+\delta_{i_h},
+\qquad 0\le q_{k,h}\le Q_k,\qquad
+q_{k,0}=q_{k,\rm end}=0.
+\end{equation}
+
+取送端点必须同选、同车、先取后送。只检查净需求为零会漏掉“先送后取”或途中超载。一般 precedence 与取送不同：只有两端都被选择时才要求同车和顺序，不强迫缺席的一端被选入。same\_\allowbreak{}vehicle 和 different\_\allowbreak{}vehicle 也按场景的条件选择语义检查，而不是对未访问点强加车辆分配。
+
+
+14 个原子及其作用如下。原子中既有可行性条件，也有状态更新与目标属性；“启用了几个原子”不能直接充当复杂度或难度指标。
+
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.2200\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3700\linewidth-2\tabcolsep\relax}P{\dimexpr 0.4100\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{原子} & \textbf{数学作用/\allowbreak{}状态} & \textbf{需要避免的误读}\\
+\midrule\endfirsthead
+\toprule
+\textbf{原子} & \textbf{数学作用/\allowbreak{}状态} & \textbf{需要避免的误读}\\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+capacity & 路线需求或逐位置载荷受 \ensuremath{Q_{k}} 限制 & 取送不能只查净载荷\\
+time\_\allowbreak{}window & 服务开始 \ensuremath{B_{i}}\ensuremath{\in}[\ensuremath{a_{i}},\ensuremath{b_{i}}] & 允许等待，不能随意延迟固定出发\\
+service\_\allowbreak{}time & 离开时刻为 \ensuremath{B_{i}}+\ensuremath{s_{i}} & 不是额外访问成本的默认别名\\
+route\_\allowbreak{}duration & \ensuremath{F_{k}}-\ensuremath{r_{k}}\ensuremath{\le}\ensuremath{H_{k}} & 包含服务和等待\\
+distance\_\allowbreak{}limit & 路线距离累加\ensuremath{\le}\ensuremath{D_{k}} & 不等同于耗时预算\\
+cost\_\allowbreak{}budget & 出行成本按配置上界检查 & 与目标中的固定成本区分\\
+prize & 给已选点累积收益 & 属性本身不要求全部访问\\
+penalty & 对漏访点累积罚金 & 不能直接转成硬必访\\
+min\_\allowbreak{}prize & 已服务收益总和达到下界 & 与 max\_\allowbreak{}prize 目标分别生效\\
+pickup\_\allowbreak{}delivery & 同选、同车、顺序及载荷语义 & 强于单独 precedence\\
+precedence & 两端都选时同车且先后有序 & 不自动强制选择\\
+same\_\allowbreak{}vehicle & 两端都选时必须同车 & 不是要求相邻\\
+different\_\allowbreak{}vehicle & 两端都选时不得同车 & 需要足够车辆才可能可行\\
+vehicle\_\allowbreak{}limit & 已用车辆数不超过给定值 & 未用车不应生成假空路线\\
+\end{longtable}\endgroup
+
+\subsection*{2.5 归一化、语义闭包与独立验收}
+
+\addcontentsline{toc}{subsection}{2.5 归一化、语义闭包与独立验收}
+
+Normalizer 先检验字段、依赖和参数域，再消除可证明的语义重复。例如固定终点全部等于起点可归为闭合模式；完全相同车辆可归为同质；全零服务时间可移除无效原子；若取送已隐含同车与先后，则重复写这些关系不制造新语义。缺少依赖或提供未启用原子的参数应报错，不由不同 solver 各自猜测。
+
+
+配置签名描述有效语义；完整实例签名还绑定底座和数值。训练暴露审计不能只看明文原子：取送隐含 precedence、same\_\allowbreak{}vehicle、paired selection 和零终载荷；某些先后关系本身要求同车。留出实验必须检查这种语义闭包，防止表面未见、实际已见。
+
+
+checker 接收公开实例与候选解，独立重建访问次数、路线时间、载荷、关系与目标。它不 import solver，也不把 solver 返回的目标当真值。该结构可以捕获适配器取整、端点处理、目标方向与模型转写错误；checker 自身仍需要小实例、反例及不同实现交叉核验，独立性不是正确性的自动证明。
+
+
+\section*{3 数据设计：从真实来源到可复现成本底座}
+
+\addcontentsline{toc}{section}{3 数据设计：从真实来源到可复现成本底座}
+
+\subsection*{3.1 来源分层与研究对象}
+
+\addcontentsline{toc}{subsection}{3.1 来源分层与研究对象}
+
+数据链包括五种性质不同的量。地点和道路几何来自真实 OSM 对象；静态耗时来自固定道路图和 OSRM profile；动态耗时是 provider 在查询窗口给出的交通感知预计值；业务规则是生成器产生的合成参数；重建值是模型估计。这五层共同构成任务，但不能在统计时全部归为“真实采集”。
+
+
+本工作的真实性主张限于可追溯的地点、道路及交通查询来源。OSRM 与 provider 输出均不等于逐程实车测量；需求、时间窗和车队也不是现实订单。来源真实和业务合成可以同时成立，正是控制实验所需的半合成设计。需要外部实车准确度时，应另设计观测验证，当前 QA 不能替代它。
+
+
+\subsection*{3.2 为什么选 12 城、每城 200 点}
+
+\addcontentsline{toc}{subsection}{3.2 为什么选 12 城、每城 200 点}
+
+研究区域为北京、上海、西安、重庆、成都、杭州、武汉、厦门、三亚、义乌、敦煌、安吉。选择意图是覆盖大城市、山地、旅游、小商品与低密度区域等不同路网情景，属于目的性设计，不是全国城市的随机抽样。
+
+
+每城节点是与真实地点关联的公共道路访问点。我们希望兼顾业务类别、空间覆盖和道路可达性，因此不按人口或订单比例随机抽点，而是对十类候选做联合选择：餐饮、医疗、教育、零售、工作、物流、休闲、交通、公共服务、住宅。类别控制使每个规模有多样功能节点；空间约束防止大量热门地点挤在局部商圈；来源去重避免同一实体被多个标签重复计数。
+
+
+实现将候选选择写成受约束的离散选择过程：类别可行配额、核心/\allowbreak{}外围配额、8\ensuremath{\times}8 粗网格覆盖、2 km 空间覆盖、实体去重和至少 35 m 分离条件共同作用，再优化覆盖。这里不是宣称对所有地理覆盖目标获得了全局最优，而是解释已执行选择器所控制的因素。候选不足时调整可行配额并保存原因，不改来源标签凑数。
+
+
+多数城市采用核心/\allowbreak{}外围 80/\allowbreak{}120；安吉在联合可行条件下为 73/\allowbreak{}127。西安医疗由 15 调整为 13、厦门零售由 30 调整为 26、义乌物流由 25 调整为 21；安吉住宅 116、敦煌住宅 85。源容量限制本身也是数据结论，不能隐藏后把类别占比解释为真实需求分布。
+
+
+\subsection*{3.3 道路访问点与嵌套规模}
+
+\addcontentsline{toc}{subsection}{3.3 道路访问点与嵌套规模}
+
+源对象到道路的关联距离上限为 200 m，另检查道路边、吸附位置与几何误差，独立几何核对容差为 2 m。节点可说明“导航到该道路位置”，不认证楼宇内部、园区入口或货车实际可进入性，也不包含下车后或进场最后一段成本。
+
+
+冻结每城 200 点后，派生固定的 N20/\allowbreak{}N50/\allowbreak{}N100/\allowbreak{}N200 嵌套子集，并保持公共节点身份和矩阵顺序。嵌套设计使规模实验可追踪共同结构，也便于检查子矩阵一致性；代价是规模间高度相关，不能把四个规模当作四次独立城市采样。实际正式题库以父 N20/\allowbreak{}N50 为主，拥有 N200 矩阵不代表已完成 N200 求解评测。
+
+
+\subsection*{3.4 静态有向矩阵的生成与解释}
+
+\addcontentsline{toc}{subsection}{3.4 静态有向矩阵的生成与解释}
+
+道路源为 2026-10-12 中国快照，提取研究区并加入约 40 km 路由缓冲，使用固定 OSRM profile 计算完整 Table。道路方向和 profile 支持的转向规则进入路由图；输出秒制 duration 与米制 distance。distance 是该 duration 最优路线的长度，不是独立求得的最短距离。因此两个矩阵不能被随意交换，三角结构也必须以实际图和路由策略为依据检查。
+
+
+四级规模共 48 对时间/\allowbreak{}距离矩阵、96 个数组。N200 每城非对角有向 OD 为 200\ensuremath{\times}199=39,800，12 城共有 477,600 个不同有向 OD；小规模是其子集，不重复增加唯一 OD 数。静态 QA 包括完整性、单位、非对角正值、对角零、节点哈希、嵌套一致性及 Route/\allowbreak{}Table 抽查。恢复路由图产生的细小差异保留为新版本证据，不静默覆盖原冻结矩阵。
+
+
+\section*{4 动态采集、时间语义与质量控制}
+
+\addcontentsline{toc}{section}{4 动态采集、时间语义与质量控制}
+
+\subsection*{4.1 固定端点上的交通观察}
+
+\addcontentsline{toc}{subsection}{4.1 固定端点上的交通观察}
+
+动态采集对同一批冻结端点查询交通感知 OD 预计耗时，保存 provider 坐标绑定与转换信息，不改变 canonical 节点。固定端点使日期之间可以比较；OSM 和 provider 的地图、路线策略仍不同，不能把动态矩阵减静态矩阵后的全部差异都叫拥堵。
+
+
+活动计划为北京时间 2026-10-15 至 10-28，共 14 天。每日名义时刻为 03:30、07:00、08:00、09:00、12:30、16:30、17:30、18:30、21:30、23:30。每城 140 帧、全计划 1,680 帧，对应 66,864,000 个非对角 OD-time 值。观察点非等间隔；大规模格子数量不等于独立样本数量，也不能支撑分钟级交通演化结论。
+
+
+N200 一帧约 400 次批量 HTTP 查询，单城窗口上限为 300 秒。12 城按三组偏移 0、5、10 分钟启动，计划允许的实际启动迟延容差为 330 秒。一个矩阵因此是有界窗口观察，不是严格同时快照。跨城市时间比较与未来可见性判定必须使用实际请求和接收时间。
+
+
+\subsection*{4.2 原始保存与三层 QA}
+
+\addcontentsline{toc}{subsection}{4.2 原始保存与三层 QA}
+
+原始响应追加保存，另存 duration、辅助 distance、observed mask、逐 OD 请求/\allowbreak{}响应时间、节点绑定与来源/\allowbreak{}代码/\allowbreak{}配置哈希。非对角缺失保持 NaN；对角零来自定义；缺边填零会将“未知”伪装成免费出行，改变最优解，属于不可接受的修复。
+
+
+第一层检查文件与契约：节点顺序、维度、单位、哈希和完整引用；第二层检查数值与时间：完整有向 OD、异常值、采集窗口、actual start、available time；第三层检查发布语义：是否原时段观测、错时恢复、重建或未核实。失败原件进入 quarantine，后续修复只新增派生产物，不改写失败身份。
+
+
+预算门禁在调用前持久化预占，失败与未知消耗保留记录，不视为零成本。求解批次设采集避让窗口，原则上在名义采集前 90 秒至后 900 秒让路。这是资源调度设计，具体 runner 的避让与实际采集延迟仍须核验，不能只因存在配置就宣布完全无干扰。
+
+
+\subsection*{4.3 当前来源分类与统计分母}
+
+\addcontentsline{toc}{subsection}{4.3 当前来源分类与统计分母}
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.2200\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3700\linewidth-2\tabcolsep\relax}P{\dimexpr 0.4100\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{项目} & \textbf{本轮核验值} & \textbf{科学含义}\\
+\midrule\endfirsthead
+\toprule
+\textbf{项目} & \textbf{本轮核验值} & \textbf{科学含义}\\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+计划城市时段 & 1,680 & 活动计划分母\\
+生产账本记录 & 1,080 & 记录覆盖 64.3\%，不等于纯实采完成率\\
+原时段 provider 完整帧 & 1005 & 名义时间匹配且实际启动合规\\
+错时恢复 provider 完整帧 & 17 & 实际查询，不能冒充原时刻真值\\
+派生/\allowbreak{}重建引用 & 58 & 含估计，不并入纯观测数量\\
+provider 完整帧合计 & 1,022 & 包含错时恢复\\
+manifest 名义时间不符 & 5 & 错时问题的子集，不是全部\\
+统一重建读取索引 & 864 & 版本化子集，不等于全部最新账本\\
+索引中含重建矩阵 & 54 & 需保留逐格 observed mask\\
+\end{longtable}\endgroup
+
+按北京时间统计的逐日来源如下。末日可能仍在运行；北京时间 23:30 对应 JST 次日 00:30，只计核验时已落盘记录。
+
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{日期} & \textbf{provider 完整帧引用} & \textbf{派生引用} & \textbf{记录总数}\\
+\midrule\endfirsthead
+\toprule
+\textbf{日期} & \textbf{provider 完整帧引用} & \textbf{派生引用} & \textbf{记录总数}\\
+\midrule\endhead
+\midrule\multicolumn{4}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+2026-10-15 & 116 & 4 & 120\\
+2026-10-16 & 106 & 14 & 120\\
+2026-10-17 & 120 & 0 & 120\\
+2026-10-18 & 120 & 0 & 120\\
+2026-10-19 & 115 & 5 & 120\\
+2026-10-20 & 111 & 9 & 120\\
+2026-10-21 & 110 & 10 & 120\\
+2026-10-22 & 104 & 16 & 120\\
+2026-10-23 & 120 & 0 & 120\\
+\end{longtable}\endgroup
+
+本轮核对被选 provider duration 与 mask 的文件哈希，未发现不匹配；这不等于重放全部响应并验证实车准确度。旧 reason flags 的空值不能证明原时段采集成功，分类必须查 manifest 和实际首请求时间。仅比对名义时间会漏掉实际严重迟到的帧，本轮两项合并识别 17 个错时恢复。
+
+
+另有 1,119 次本地原始帧尝试，PASS 1,038、QUARANTINE 81，包含试采与未被选用产物。尝试数、生产时段数、原始有效帧数、重建矩阵数使用不同分母，不能相减后声称“补齐了多少真实数据”。当前任务是形成最终版本化的逐时段、逐格来源清单，而不是由 PASS 总数直接生成采集率。
+
+
+\subsection*{4.4 历史辅助源与主时间轴隔离}
+
+\addcontentsline{toc}{subsection}{4.4 历史辅助源与主时间轴隔离}
+
+成都 2015 年公开道路速度源已核验 91 个发布文件，覆盖 45 个日历日、44 个可用源日。2015-06-03 存在冲突分片，原件保留并隔离，未猜测修正。已构建 308 个合格原生图 N200 辅助矩阵，另有 142 个缺失或冲突候选时段。
+
+
+这套数据有自己的历史路网和端点，且源发布本身含处理值、完整原始 observed mask 不可得。它可以作为独立辅助轨，不能直接拼接为 2026 年固定 POI 的更长实采序列，也不能把其时间长度换算成当前采集进度。
+
+
+\section*{5 缺失重建：方法、原理与验证边界}
+
+\addcontentsline{toc}{section}{5 缺失重建：方法、原理与验证边界}
+
+\subsection*{5.1 为什么在对数空间估计残差}
+
+\addcontentsline{toc}{subsection}{5.1 为什么在对数空间估计残差}
+
+缺失重建解决数据可用性，不替代来源审计。道路拥堵常体现为相对倍率变化，直接对耗时做全局加法会对短边、长边产生不同偏差。现有方法用目标之前的完整帧构建基准 P，再以目标残存观测 O 校正对数倍率：
+
+
+\begin{equation}
+r_{ij}=\log\frac{T^{\rm obs}_{ij}}{P_{ij}},
+\qquad
+\widehat T_{ij}=P_{ij}\exp(\widehat r_{ij}).
+\end{equation}
+
+调用方要求捐赠帧名义时间早于目标且实际完成时间早于目标，最多取最近 8 个完整帧。先验可用最近帧，或对近期同刻变化做受限修正；后续扩展比较前三天同刻矩阵的中位数。先验与选择规则均有版本，不能在测试中看到答案后挑最合适的前一天。
+
+
+若锚点很少，causal\_\allowbreak{}scalar 只取观测残差中位数。其假设是目标相对先验主要发生全局倍率变化，优点是低方差、易解释；缺点是不能表达城市不同方向和区域的变化。该基线必须保留，防止复杂模型只因参数多而看起来更强。
+
+
+\subsection*{5.2 鲁棒特征校正与空间方向效应}
+
+\addcontentsline{toc}{subsection}{5.2 鲁棒特征校正与空间方向效应}
+
+锚点不少于 100 时，temporal\_\allowbreak{}huber 使用先验/\allowbreak{}静态比值、最近帧/\allowbreak{}静态比值、静态耗时、距离、起终点标准化坐标、坐标差的二次项等公开特征。第一组比值刻画相对交通状态，尺度项区分长短路线，坐标和方向项描述区域与流向。模型通过 Huber 加权岭回归抑制少量异常锚点：
+
+
+\begin{equation}
+\widehat\beta=\arg\min_\beta
+\sum_{(i,j)\in O}\rho_\delta(r_{ij}-x_{ij}^{\mathsf T}\beta)
++\lambda\|\beta_{\rm nonint}\|_2^2.
+\end{equation}
+
+实际实现对观测特征标准化，执行 4 轮 IRLS；稳健尺度下限为 0.005，Huber 权重使用 1.345 倍尺度，岭系数为 0.02\ensuremath{\times}锚点数，截距近乎不惩罚。这里只说明实际算法，不把四轮近似称为严格收敛的全局统计估计。
+
+
+spatial\_\allowbreak{}huber 在全局回归后增加起点与终点的分离效应：
+
+
+\begin{equation}
+\widehat r_{ij}=x_{ij}^{\mathsf T}\widehat\beta+u_i+v_j.
+\end{equation}
+
+起终效应交替更新 4 轮，样本数以 count/\allowbreak{}(count+30) 收缩，再利用坐标高斯核平滑，带宽取第八近邻距离的中位数并设下限。分别建模 u 和 v 能保留有向差异；若强制对称，会把进城与出城、上下行等结构抹平。校正范围按观测残差分位数与预设边界截断，最终耗时还受历史经验上下范围约束。这些是防发散的经验护栏，不是物理自由流下界的证明。
+
+
+写回时严格恢复已观测值，未知格才使用估计，对角置零；点估计不添加装饰性独立噪声。另构建 8 个整场残差重采样情景，保留空间相关性供鲁棒性分析。它们既不是新增交通观察，也不是已校准的覆盖率区间。
+
+
+\subsection*{5.3 回放实验如何测、结果能说明什么}
+
+\addcontentsline{toc}{subsection}{5.3 回放实验如何测、结果能说明什么}
+
+实际缺失格没有真值，故评估采用完整观测帧加真实失败 mask 的人工遮蔽。首批 42 种 mask 分别用于开发与后续留出，共 84 个案例，每阶段对应 33 个不同城市/\allowbreak{}日期/\allowbreak{}时段组。每例只在被遮蔽格上计算：
+
+
+\begin{equation}
+{\rm WAPE}=100\frac{\sum_{(i,j)\in H}|\widehat T_{ij}-T_{ij}|}
+{\sum_{(i,j)\in H}T_{ij}},
+\end{equation}
+
+H 为人工隐藏集合。先对同组 mask 变体的指标取均值，再对 33 组取中位数，避免相同底帧被多个 mask 重复加权。留出结果中，简单因果比例基线的组指标中位数为 6.5705\%，spatial\_\allowbreak{}huber 为 3.8456\%；中位 APE 从 5.1959\% 降至 3.1566\%，P90 APE 从 15.1337\% 降至 9.1441\%。
+
+
+后续 10 月 22 日扩展使用 12 种 mask、48 个案例，开发/\allowbreak{}留出各 24 个城市日期组，6 个方法共 288 个案例级记录。留出 WAPE 中位数分别为：最近帧＋比例 3.2181\%，原空间方法 2.5540\%，同刻中位数＋比例 2.6853\%，同刻中位数＋空间 2.2989\%。这组任务与首批不同，不混合成一个更漂亮的总分。
+
+
+当前 54 张含重建矩阵保留 1,080,584 个原观测非对角格、估计 1,068,616 个缺失格；8 情景对应 432 个派生场。人工遮蔽的改善不能证明实际未知格达到同等误差，整帧缺失也比残存锚点充分的情况更难。捐赠帧时间合法只证明输入因果，不证明算法选择、标定与研究者调参全过程在线无泄漏；正式实验还需锁定重建版本，分别报告纯观察、恢复和重建子集。
+
+
+\section*{6 任务生成：可行性、难度与泛化控制}
+
+\addcontentsline{toc}{section}{6 任务生成：可行性、难度与泛化控制}
+
+\subsection*{6.1 为什么用构造 witness，但不能把它当答案}
+
+\addcontentsline{toc}{subsection}{6.1 为什么用构造 witness，但不能把它当答案}
+
+随机生成容量、窗口和关系，容易产生大量无解题，导致方法比较退化成谁最先找不到解。当前生成器采用可行优先策略：先在公开底座上构造一组路线，按 precedence 调整顺序，再围绕其资源使用量生成窗口、容量和预算。构造路线作为私有 witness 经独立 checker 验证，证明至少存在一个可行解。
+
+
+此方法把“是否有解”和“能否优化”适当分离，便于研究系统能力；同时引入构造偏差，某些路线形态或紧度可能更贴近生成器。必须用独立求解方法、不同 witness 构造策略与分层结果衡量这种偏差，而不能因为 witness 可行就宣称实例具有现实业务分布或很高难度。witness 不进入 solver 初始化、模型输入、few-shot 或 RAG。
+
+
+\subsection*{6.2 参数怎么生成，紧度是什么意思}
+
+\addcontentsline{toc}{subsection}{6.2 参数怎么生成，紧度是什么意思}
+
+静态生成的 loose/\allowbreak{}medium/\allowbreak{}tight 三档，容量倍率为 1.35/\allowbreak{}1.15/\allowbreak{}1.00，时间 slack ratio 为 1.00/\allowbreak{}0.50/\allowbreak{}0.15，资源倍率为 1.35/\allowbreak{}1.15/\allowbreak{}1.02；可选访问比例为 0.80/\allowbreak{}0.65/\allowbreak{}0.50。时间松弛取 max(60 秒，非对角耗时中位数\ensuremath{\times}对应比例)，服务时间从 60/\allowbreak{}120/\allowbreak{}180/\allowbreak{}240 秒取值。容量围绕 witness 峰值或总量设定，窗口围绕可行服务时刻扩展，路线资源上界由构造路线使用量和余量形成。
+
+
+组合题生成中，需求为 1–9，服务时间为 60/\allowbreak{}120/\allowbreak{}180 秒，收益为 1–30；漏访罚金按耗时中位数乘 0.5–1.5 的随机倍率生成，最低收益可围绕保留集合的 90\% 构造。参数的单位与来源都明确，它们是受控业务属性，不是从真实订单回归得到的统计分布。
+
+
+tight 是生成参数标签，不是计算难度证书。更紧的约束可能收缩搜索空间而变容易，也可能减少可行解而变难；可选比例变化还会改变必须服务的规模。后续以 exact 终止比例、有效解率、耗时曲线、约束活跃性和不同 solver 的行为判断难度，而不预设单调关系。
+
+
+\subsection*{6.3 静态城市留出题库}
+
+\addcontentsline{toc}{subsection}{6.3 静态城市留出题库}
+
+原产物 1,224 份，依据完整实例签名去掉 48 份实际重复，形成 1,176 题。典型重复是 ATSP 的不同 tightness 标签没有改变任何输入，故不能重复计数。题库来自 11 个经典模板和 6 个组合预设，覆盖 ATSP、容量/\allowbreak{}时间窗及其组合、定向越野、奖赏收集、开放、多仓库、取送及异构容量等场景。
+
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.3333\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3333\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3333\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{分区} & \textbf{城市} & \textbf{题数}\\
+\midrule\endfirsthead
+\toprule
+\textbf{分区} & \textbf{城市} & \textbf{题数}\\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+train & 上海、西安、杭州、武汉、厦门、义乌 & 588\\
+validation & 成都、安吉 & 196\\
+test & 北京、重庆、三亚、敦煌 & 392\\
+\end{longtable}\endgroup
+
+父规模为 N20/\allowbreak{}N50。旧取送生成器为得到成对服务端点使用物理 N19/\allowbreak{}N49；其余主要为 N20/\allowbreak{}N50，必须按实际节点数报告。原题库的 17 个预设显式覆盖 8/\allowbreak{}14 原子，且没有 min\_\allowbreak{}makespan 题；实现支持四类目标与 14 原子，不等于此套数据全部覆盖。
+
+
+该划分测量已见类型配置在未见城市上的表现。若后续把全部城市的组合开发题用于训练，同一训练产物不再天然具有对这四座 test 城市的完全零暴露性质，必须按实验暴露谱重新解释。
+
+
+\subsection*{6.4 全原子组合题库与交互留出}
+
+\addcontentsline{toc}{subsection}{6.4 全原子组合题库与交互留出}
+
+组合题库另有 25 个配置族、1,512 题，train/\allowbreak{}validation/\allowbreak{}test 为 1,224/\allowbreak{}72/\allowbreak{}216。前两个真实物理节点用作合成仓库，提供 4 辆可用车辆，保留全部 20/\allowbreak{}50 个节点，服务点为 18/\allowbreak{}48。开发部分含 15 个覆盖族及 6 个控制族，验证 1 族，测试 3 族，明确覆盖全部 14 原子。
+
+
+验证交互为 vehicle\_\allowbreak{}limit\ensuremath{\times}time\_\allowbreak{}window；测试交互为 pickup\_\allowbreak{}delivery\ensuremath{\times}penalty、different\_\allowbreak{}vehicle\ensuremath{\times}cost\_\allowbreak{}budget、same\_\allowbreak{}vehicle\ensuremath{\times}distance\_\allowbreak{}limit。生成器同时构造移除目标原子或交互的反事实控制，792 项原子效果检查用于确认规则确实产生可观察作用，避免“字段存在但永不约束”的虚覆盖。1,512 个 witness 均在私有侧验收。
+
+
+这些测试题共享开发侧的城市和底座，216 道 test 来自 24 个城市\ensuremath{\times}规模父组，所以回答的是“同底座上未见交互”，不能同时称未见城市泛化。792 个效果检查证明特定构造下能区分规则，不证明所有模型失败都由组合推理造成；还需匹配难度和控制目标题与对照题的求解差异。
+
+
+\subsection*{6.5 暴露、去重与私有信息}
+
+\addcontentsline{toc}{subsection}{6.5 暴露、去重与私有信息}
+
+暴露审计包含历史 1,193 个公开输入，即 1,176 个旧静态题与 17 个先导输入，并检查原子语义闭包、超集配置、开发和验证内容。当前 few-shot/\allowbreak{}RAG 集合为空，不等于基础模型预训练从未接触相似算法；公开预训练未知部分如实列为无法保证。
+
+
+实例签名防止数值重复，父组标识防止嵌套子集和派生场景跨分区冒充独立泛化。证书、witness、未来目标、target-own adapter 和 reference route 属于评测或训练标签，按用途隔离。公开 input-only 文件不携带私有答案；一项私有信息是否能用于训练，还取决于该实验的预登记设置，而不是“文件在本地”就可读。
+
+
+\subsection*{6.6 组合难度匹配：为什么原控制还不充分}
+
+\addcontentsline{toc}{subsection}{6.6 组合难度匹配：为什么原控制还不充分}
+
+早期组合小样按同底座、规模、紧度、目标、端点与原子数配对，但这些结构条件不保证两侧搜索难度相同。开发侧难度代理将六对目标的预测 EXACT 率全部推到 1，且目标组合没有精确对应开发条目，代理失去区分力。因此不能用该外推证明控制已匹配，也不能反过来断言组合泛化不可检验。
+
+
+新批次在求解前冻结 432 题目标/\allowbreak{}候选池和 2,086 个作业，先测两侧难度，再决定控制是否合格。池内为 216 个测试目标和 216 个训练候选；历史冻结分配为 HiGHS 432、内部 LNS 1,296、OR-Tools 315、PyVRP 43，合计 2,086。内部 LNS 仅保留执行证据，撤下后哪些作业可进入新 reference 须按准入重新聚合。v2 允许用测试分区的 solver 测量构建评测集，必须作为新版本披露，与旧版只使用开发统计的规则区别；LLM 在这些题上的成功/\allowbreak{}失败不得参与控制选择。
+
+
+已登记的方案按父规模、紧度标签和目标作硬键，再结合 EXACT 率差、基准方法质量差与原子 Jaccard 差做近邻匹配，最大距离拟为 0.30。但完整匹配规则尚未冻结：旧 gap 缓存是比例，旧表达式再除 100；缺失 gap 又被当作 0，新批还没有安排旧 greedy 指标，均会造成偏差。正式实施前必须统一比例/\allowbreak{}百分数、EXACT 分母、双方共同基准与缺失处理，不能直接执行旧距离表达式。
+
+
+这一步的可接受结果包括完整匹配、部分匹配和没有合格控制。补跑 reference 只提供难度测量，不保证一定找到配对；若只有部分合格，主结论就限于该子集，并报告被排除题型。不得为了凑齐数量放宽阈值，也不得看到 LLM 成败后重选 control。
+
+
+\section*{7 精确求解：统一 MILP 的原理与实现}
+
+\addcontentsline{toc}{section}{7 精确求解：统一 MILP 的原理与实现}
+
+\subsection*{7.1 为什么需要独立的精确层}
+
+\addcontentsline{toc}{subsection}{7.1 为什么需要独立的精确层}
+
+精确求解器承担三个职责：在可解小中规模上提供最优性或可行性参考；用数学模型交叉检查任务语义；为近似算法和模型失败提供解释。精确不是某个程序名称的荣誉标签。只有可信的终止状态、可行解、目标与界一致，并满足预算与数值检查，才能授予相应实例 EXACT。
+
+
+在机制上，MILP 先用连续松弛给出界，再对尚未整数化的决策分支，结合预处理、割与可行解搜索收紧上下界。最小化时，incumbent 提供上界，松弛提供下界；只有搜索证明剩余区域不可能更优、并达到数值终止要求，才有全局最优性结论。复杂约束使模型统一表达成为可能，却可能让松弛变弱和分支树膨胀，因此需要同时记录解质量、bound 与时间，而不是只看是否返回路线。
+
+
+当前统一 MILP 通过 SciPy/\allowbreak{}HiGHS 执行，模型与 checker 分离。Gurobi 历史先导有记录，但当前参考队列因许可证失效未纳入；不能把旧成功调用解释为最新可用。小规模 Held–Karp 用于 ATSP 诊断和交叉校准，当前不把 N8 等诊断的精确结果推广成 N20/\allowbreak{}N50 已证最优。
+
+
+\subsection*{7.2 路由变量、流守恒与消除子环}
+
+\addcontentsline{toc}{subsection}{7.2 路由变量、流守恒与消除子环}
+
+为每辆车建立虚拟 source 与 sink，避免闭合仓库同时充当时间起终点形成矛盾；它们只是建模副本，不改变实际节点。二元变量 \ensuremath{x_{\mathrm{kij}}} 表示选择边，\ensuremath{y_{ki}} 表示客户由车辆 k 服务，\ensuremath{z_{k}} 表示车辆使用。源和汇流量均为 \ensuremath{z_{k}}，每个客户的入度与出度均为 \ensuremath{y_{ki}}，并限制已用车至少服务一个客户：
+
+
+\begin{equation}
+\sum_jx_{k,sj}=z_k=\sum_ix_{k,it},\qquad
+\sum_jx_{k,ij}=y_{ki}=\sum_jx_{k,ji},
+\qquad z_k\le\sum_i y_{ki}.
+\end{equation}
+
+必访客户跨车分配总和为 1，可选客户总和不超过 1。自由终点的 sink 边成本/\allowbreak{}时间为零，表示最后一个客户直接结束，而不是一条真实免费道路。
+
+
+仅用时间递推消除子环在零耗时边或特殊配置下可能失效，因此模型另引入顺序变量 \ensuremath{u_{ki}}，选中客户时落在 1 到 n，未选时为 0，选中客户间边强制顺序递增：
+
+
+\begin{equation}
+y_{ki}\le u_{ki}\le ny_{ki},\qquad
+u_{kj}\ge u_{ki}+1-M_u(1-x_{kij}).
+\end{equation}
+
+一条与 source/\allowbreak{}sink 断开的回路会要求顺序沿环严格增加而无法闭合，从而被排除。实现不是把“有流守恒”误当成已经消除了所有子环。
+
+
+\subsection*{7.3 时间、载荷与关系怎样线性化}
+
+\addcontentsline{toc}{subsection}{7.3 时间、载荷与关系怎样线性化}
+
+服务时刻变量按选中边施加：
+
+
+\begin{equation}
+B_{kj}\ge B_{ki}+s_i+\tau_{ij}-M_T(1-x_{kij}).
+\end{equation}
+
+源边锚定固定出发时刻，客户窗口与是否选择联动，终点时刻按闭合/\allowbreak{}固定/\allowbreak{}自由语义约束。\ensuremath{M_{T}} 由有限 horizon、最大边耗时与最大服务时间推导，不使用无限大常数。过大的 M 会恶化松弛和数值条件，过小会错误删除可行解；实现有界构造仍应靠小实例检查，而不是仅看 solver 是否返回成功。
+
+
+普通配送用每车需求和容量不等式；取送在边选中时用两侧 big-M 约束载荷差等于 \ensuremath{\delta}\_\allowbreak{}j，同时限制载荷范围与最终归零。成对选择和同车由每车 y 变量对应，precedence 用顺序变量条件约束，异车用同车分配和\ensuremath{\le}1。距离、成本和时长各自以正确矩阵和单位累加。
+
+
+目标按第 2 节线性表达；max\_\allowbreak{}prize 通过求解方向变换实现，checker 始终按原方向计价；makespan 引入最大完成时间变量。模型规模主要随车辆数和服务点平方增长，即 O(|K|n\ensuremath{^2}) 级变量/\allowbreak{}关系，这只是模型表示规模，不是 NP-hard 问题的多项式求解保证。
+
+
+\subsection*{7.4 终止状态、预算与证据}
+
+\addcontentsline{toc}{subsection}{7.4 终止状态、预算与证据}
+
+历史统一批次环境记录为 Python 3.12.14、NumPy 2.5.4、SciPy 1.16.2，三个单线程 worker；应按该批环境解释，不冒充所有机器的当前安装。N20 父规模预算 60 秒，N50 为 300 秒，准入时间有 0.25 秒容差；模型构建、solver 时间与控制器 elapsed 分开记录，不能把后处理移出成本后夸大速度。
+
+
+EXACT 要求可信最优终止，solver 目标、checker 重算与 bound 在规定相对尺度 10\textasciicircum{}-6 容差内一致；找到可行 incumbent 但超时只能贡献合格可行解，不能升级为 EXACT。NO\_\allowbreak{}INCUMBENT 代表未找到，不代表不可行。严格不可行需要可信终止或独立证书，且不能由有限预算近似算法的失败来替代。
+
+
+当前历史 5,880 个作业结果与收据齐全，但混合参考池含撤下 LNS；本版只保留执行证据，不沿用旧池的 EXACT/\allowbreak{}BKS 汇总为当前可发布结论。下一步在保留原始日志的前提下按新准入池重新构建 reference，再重算依赖它的 gap。
+
+
+\section*{8 Baseline 体系：机制、适用范围与全方法覆盖}
+
+\addcontentsline{toc}{section}{8 Baseline 体系：机制、适用范围与全方法覆盖}
+
+\subsection*{8.1 “能测的都测”如何成为可执行要求}
+
+\addcontentsline{toc}{subsection}{8.1 “能测的都测”如何成为可执行要求}
+
+目标覆盖精确、构造启发式、局部搜索、元启发式、神经构造、神经改进、LLM 与混合系统。不能只列方法名，必须对每个候选明确版本/\allowbreak{}权重/\allowbreak{}实现身份、支持的有向成本与约束、数据暴露、训练与推理预算，以及独立验收结果。允许方法只支持某些任务，但 UNSUPPORTED 进入覆盖统计，不靠去掉约束扩充成绩。
+
+
+“全方法”是持续扩展的研究范围，不是当前已经跑完的事实。当前先保证各范式有可审计代表，再按公开实现和实际可运行性扩展。对没有成熟实现或不能保持任务语义的方法，记录不准入原因和待适配工作，不能把无法运行的名字列成已完成对照。
+
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.1800\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3700\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2000\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{范式} & \textbf{代表及核心机制} & \textbf{当前状态} & \textbf{正式比较仍需完成}\\
+\midrule\endfirsthead
+\toprule
+\textbf{范式} & \textbf{代表及核心机制} & \textbf{当前状态} & \textbf{正式比较仍需完成}\\
+\midrule\endhead
+\midrule\multicolumn{4}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+精确算法 & HiGHS MILP；Gurobi；小规模 DP & HiGHS 已执行；Gurobi 旧先导；DP 诊断 & 新 reference 池、版本/\allowbreak{}预算和原始证据\\
+构造启发式 & 最近邻、插入、节约、regret insertion & 自研 greedy 已执行，范围有限 & 多起点、强插入及统一成本计量\\
+局部搜索 & relocate、swap、2-opt/\allowbreak{}2-opt*、片段编辑 & greedy 部分 relocate；旧 ATSP 有向编辑 & 各原子可行邻域与增量计价验证\\
+元启发式 & GLS、HGS、ILS、SA、禁忌、LNS/\allowbreak{}ALNS & OR-Tools/\allowbreak{}PyVRP 适配及小样；自研 LNS 撤下 & 有出处实现、支持矩阵、种子和全量运行\\
+神经构造 & Attention Model、POMO、MatNet/\allowbreak{}URS & 旧方法线有模型；新题库未全量接入 & 有向矩阵输入、约束掩码、训练分区\\
+神经改进 & 学习邻域、NeuroLKH 类候选引导 & 列入计划，未完成当前正式测评 & 检查稀疏候选是否改变可行域\\
+LLM & Direct、声明式 Model、受控工具链 & Spark 小样；Qwen/\allowbreak{}GLM 开发记录 & 锁模型身份、匹配预算、扩题复测\\
+混合方法 & 神经/\allowbreak{}LLM 候选＋solver/\allowbreak{}repair & 设计及局部组件 & 拆解生成、修复、求解的独立贡献\\
+时间方法 & Static、Reactive、预测、记忆、JEPA & 接口与历史开发实验 & 新序列正式生产运行、因果与预算确认\\
+\end{longtable}\endgroup
+
+\subsection*{8.2 构造与局部搜索为什么仍重要}
+
+\addcontentsline{toc}{subsection}{8.2 构造与局部搜索为什么仍重要}
+
+最近邻每一步选当前局部最便宜的可行下一点，计算轻，但容易陷入短视。插入法评价把未访问点加入各路线各位置的边际成本，可自然结合车辆与窗口；regret 则优先处理“最佳插入与次佳插入差较大”的困难客户，避免其廉价位置被抢。节约法从多个短路线合并，利用合并前后的成本减少量。不同机制的失败模式不同，不能用一个最弱 greedy 代表全部传统算法。
+
+
+当前 greedy 只支持必访、min\_\allowbreak{}total\_\allowbreak{}cost/\allowbreak{}min\_\allowbreak{}makespan 与 capacity、time\_\allowbreak{}window、service\_\allowbreak{}time、vehicle\_\allowbreak{}limit、route\_\allowbreak{}duration、distance\_\allowbreak{}limit、cost\_\allowbreak{}budget 的适当组合；可选访问与复杂关系并非全支持。容量加时间窗场景使用按 deadline 排序的联合插入，遍历车辆与位置并做公开约束检查；某些配送配置含专门分组过程。无约束闭合场景还做两轮 relocate，并对有向总代价完整重算。该实现是可解释弱基线，不是文献中全部构造/\allowbreak{}改进方法的充分代表。
+
+
+有向路线的邻域必须谨慎。relocate 保持片段内部方向，delta 可以由少量边替换求得；对 ATSP 做 2-opt 反转则同时改变所有内部边方向，不能沿用对称 TSP 只改四个端点的公式。加入时间窗、取送或车辆关系后，还须检查受影响后缀状态和关系。后续要求局部增量计算与 checker/\allowbreak{}暴力重算在小实例一致，才能用它支撑大规模搜索结果。
+
+
+\subsection*{8.3 外部 OR-Tools 与 PyVRP 的实际适配}
+
+\addcontentsline{toc}{subsection}{8.3 外部 OR-Tools 与 PyVRP 的实际适配}
+
+元启发式各有不同的跳出局部最优机制：SA 按温度允许一定概率的劣化，禁忌搜索短期禁止回撤，ILS 对局部最优做扰动和重启，HGS 维护种群并结合局部搜索与多样性。它们需要明确接受规则、参数和预算，不能由一个方法替代整个谱系。
+
+
+OR-Tools Routing 的构造加 guided local search 通过改变局部搜索的评价惩罚帮助跳出停滞[6]；最终仍按原目标计价。现有适配器面向全部必访的 min\_\allowbreak{}total\_\allowbreak{}cost，覆盖容量、窗口、服务、时长、距离/\allowbreak{}成本资源、车辆上限，以及取送和车辆/\allowbreak{}先后关系，并处理三种终点模式。支持的是这段适配实现的能力，不是产品所有功能的总览。
+
+
+PyVRP 代表混合遗传与局部搜索范式[7]。现有适配限定必访与 min\_\allowbreak{}total\_\allowbreak{}cost，支持仓库配送容量、时间窗、服务时长、异构/\allowbreak{}多仓库及闭合/\allowbreak{}固定终点；尚不支持自由终点、取送及一般关系、可选收益罚金和其他资源目标。其坐标字段为接口占位，distance 字段承载当前目标成本，不自动具有物理距离语义，因此不能把未适配的 distance\_\allowbreak{}limit 当作已经支持。
+
+
+历史安装记录 OR-Tools 9.15.6755、PyVRP 0.14.0。输入按 1000 比例转整数：目标四舍五入，资源消耗与上限按保守方向取整。这样可以减少资源超限，但会改变目标排序或排除边界可行解；不据此授予原连续任务的最优性或不可行证明。候选最终回到原始浮点矩阵和独立 checker。OR-Tools 元数据还明确 seed\_\allowbreak{}applied=false，不能把不同 seed 标签当成真实独立随机重复。
+
+
+原静态题库的能力筛选为 OR-Tools 744 题、PyVRP 384 题；这是计划支持数，不是全量运行完成数。历史 51 道训练题、3 城、1 秒预算的五方法诊断共有 255 个记录，其小样、训练分区和短预算性质不支持正式排名。外部参考补跑仍需按冻结清单执行并验证收据。
+
+
+\subsection*{8.4 LNS/\allowbreak{}ALNS：思路合理，具体实现不能借用论文身份}
+
+\addcontentsline{toc}{subsection}{8.4 LNS/\allowbreak{}ALNS：思路合理，具体实现不能借用论文身份}
+
+LNS 的通用原理有明确来源：从当前解中移除一部分访问，再用约束传播或插入重建被破坏部分，搜索尺度大于单次小邻域移动。Shaw 的大邻域思想与 Ropke–Pisinger 的 ALNS 是可引用的代表[4,5]。ALNS 的关键还包括多个 destroy/\allowbreak{}repair 算子的自适应选择及相应接受机制；不能把所有“随机删点再插回”都称作复现某篇 ALNS。
+
+
+本地被质疑版本的实际机制为：随机移除约 15\%–40\% 客户、按位置候选计算 regret、只接受改善、每 5 轮重启。它没有验证为权威算法的完整实现，也没有对应的自适应算子权重或退火接受过程。其 regret 候选来自所有位置，亦不等同于某些文献按不同路线定义的 regret。通用思路合理，但性能、实现正确性和公平性必须靠具体实现证明，不能由“LNS 有论文”一并担保。
+
+
+已从公开结果移除该方法的 17 行先导记录，保留其他方法 51 行，并将依赖旧池的相对 gap 留空。内部历史结果与运行日志保留用于追溯；正在运行且包含它的旧冻结批次只报告作业计数，不自动进入新公开 reference 池。后续可选有明确版本和出处的实现，或把它如实命名为自研 destroy–repair heuristic，先做语义与算法验证再决定准入。
+
+
+\subsection*{8.5 神经算法：学什么、怎样公平比较}
+
+\addcontentsline{toc}{subsection}{8.5 神经算法：学什么、怎样公平比较}
+
+神经构造方法把路线表示为自回归策略：
+
+
+\begin{equation}
+p_\theta(\pi\mid\mathcal I)=
+\prod_{h}p_\theta(a_h\mid\mathcal I,a_{<h},m_h),
+\end{equation}
+
+\ensuremath{m_{h}} 是根据当前资源和访问状态生成的可行动作掩码。Attention Model 用编码器和注意力解码器建模组合结构[2]；POMO 通过多个起始解轨迹和共享基线改善策略梯度估计与搜索机会[3]。典型训练目标为期望路线代价，REINFORCE 估计为：
+
+
+\begin{equation}
+\nabla_\theta J=
+\mathbb E\left[(C(\pi)-b)\nabla_\theta\log p_\theta(\pi\mid\mathcal I)\right].
+\end{equation}
+
+损失形式通用，不意味着现成欧氏权重能处理任意有向矩阵和 14 原子。必须明确 cost encoder、车辆状态、关系掩码、终止条件与训练分布。坐标旋转/\allowbreak{}镜像增强保持欧氏距离，却不自然适用于任意有向成本；合法节点置换须同步变换所有矩阵、属性和关系。POMO 轨迹数、采样数和增强次数都属于搜索预算。
+
+
+神经改进方法从完整可行解出发，学习选择邻域或评价改动；神经搜索混合可预测候选边来引导传统搜索，NeuroLKH 是代表[8]。其优势可能来自降低搜索成本，而非纯神经直接解题。若稀疏候选删除了原可行边，需要报告是否有回退和是否改变问题；若作成本重参数化，需要验证原始路线评分与约束保持。现阶段它们属于应测方法，尚未在当前完整题库完成接入和排名。
+
+
+\subsection*{8.6 LLM 与工具系统的预算边界}
+
+\addcontentsline{toc}{subsection}{8.6 LLM 与工具系统的预算边界}
+
+Direct 输出路线，Model 输出声明式 Scenario 后交给固定 solver，工具系统还可能包含检索、代码或多轮修复。这些系统的能力构成不同：Model 的好解可能主要来自后端精确求解；repair 的收益可能主要来自额外搜索。比较应同时设“同 backend”“同 token/\allowbreak{}调用数”“同总时间”对照，记录解析、语义、求解、checker 各阶段。
+
+
+端到端能力可作为一种产品指标，但不能把工具链的最优性归给 LLM 推理本身。当前基准的受控 Model 轨不执行任意 Python；如后续引入代码生成，必须作为独立轨道定义执行环境与资源边界，不混入现有声明式结果。
+
+
+\section*{9 语言任务与 LLM：从规则理解到可执行解}
+
+\addcontentsline{toc}{section}{9 语言任务与 LLM：从规则理解到可执行解}
+
+\subsection*{9.1 表达形式控制}
+
+\addcontentsline{toc}{subsection}{9.1 表达形式控制}
+
+语言渲染匿名化节点，不向模型透露城市、OSM ID、canonical 问题名或私有 witness；矩阵保持有向原值，不四舍五入或对称化。不必要的矩阵别名可省略以控制长度，但不能改变输入信息。structured、nl\_\allowbreak{}a、nl\_\allowbreak{}b 以及节点置换用于区分数值求解、规则表达和位置敏感性。
+
+
+已完成 1,176\ensuremath{\times}3=3,528 个确定性公开 round-trip 检查，证明受控渲染器与解析流程在所支持语法内保持语义。它不证明模型能理解任意自然语言，也不覆盖真实业务描述的歧义、省略或冲突。
+
+
+\subsection*{9.2 两轨链路与语义门禁}
+
+\addcontentsline{toc}{subsection}{9.2 两轨链路与语义门禁}
+
+Direct 的链路为输入\ensuremath{\rightarrow}路线 JSON\ensuremath{\rightarrow}格式检查\ensuremath{\rightarrow}checker；Model 为输入\ensuremath{\rightarrow}Scenario JSON\ensuremath{\rightarrow}归一化\ensuremath{\rightarrow}与题目语义投影比较\ensuremath{\rightarrow}固定 HiGHS\ensuremath{\rightarrow}checker。Model 必须先通过语义门禁，不能只因 solver 在“另一个更简单的问题”上找到好解而判成功。
+
+
+连续数值等价采用 v2.3 白名单，只容许指定连续字段的浮点表示误差，阈值为：
+
+
+\begin{equation}
+|x-y|\le \min\{4\max(\operatorname{ulp}(x),\operatorname{ulp}(y)),10^{-9}\}.
+\end{equation}
+
+离散字段和应精确的零不放宽，最后用 canonical 参数求解与验收。此规则解决序列化误差，不允许模型改需求、少约束或换目标。失败分层包括网络/\allowbreak{}截断、JSON/\allowbreak{}模式、语义不符、solver 无解或超时、路线约束违规；这些分层使下一步修复有明确对象。
+
+
+\subsection*{9.3 Spark 已执行小样及其解释}
+
+\addcontentsline{toc}{subsection}{9.3 Spark 已执行小样及其解释}
+
+Spark 小样为 64 次正式请求，不含 6 次 smoke。首答 48 次来自 12 个跨城任务\ensuremath{\times}2 轨，以及 6 对目标—控制共 12 个任务\ensuremath{\times}2 轨；另选 8 个任务\ensuremath{\times}2 轨作 16 次重复。重复名单在观察输出前锁定，覆盖四个测试城市及完整配对，避免事后挑选。
+
+
+历史调用配置为 spark-x2.6、enable\_\allowbreak{}thinking=false、temperature=1、max\_\allowbreak{}tokens=8192，无重试与自动修复；Model 后端 HiGHS 为 60 秒。该身份属于请求记录，不是对服务商当前产品规格的重新认证。64 次均正常 stop，无传输或截断失败；usage 合计 477,557 token，不能直接换算为已付金额。
+
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{统计范围} & \textbf{Direct 有效} & \textbf{Model 有效} & \textbf{合计}\\
+\midrule\endfirsthead
+\toprule
+\textbf{统计范围} & \textbf{Direct 有效} & \textbf{Model 有效} & \textbf{合计}\\
+\midrule\endhead
+\midrule\multicolumn{4}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+首答 & 3/\allowbreak{}24 & 6/\allowbreak{}24 & 9/\allowbreak{}48（18.75\%）\\
+追加重复 & 1/\allowbreak{}8 & 4/\allowbreak{}8 & 5/\allowbreak{}16（31.25\%）\\
+两者描述性合计 & 4/\allowbreak{}32 & 10/\allowbreak{}32 & 14/\allowbreak{}64\\
+\end{longtable}\endgroup
+
+14/\allowbreak{}64 含同题重复，不是 64 道独立题，也不是 Pass@1。无效结果中路线违规 28、模型无效 20、语义不符 2，共 50；Model 的少量有效结果说明固定求解后端可以把正确转写变成路线，不说明其转写已稳定。
+
+
+16 组首答—重复的有效性一致 9/\allowbreak{}16、翻转 7/\allowbreak{}16。这个小样显示输出稳定性需要研究，不能单凭 temperature=1 就确定翻转因果，也不作显著性排名。组合目标题首答有效 3/\allowbreak{}12、控制 0/\allowbreak{}12；加入重复后为 4/\allowbreak{}16 与 0/\allowbreak{}16。任务少且可能难度不匹配，不能把这一方向直接解释为组合规则更容易。
+
+
+\subsection*{9.4 其他模型与未完成范围}
+
+\addcontentsline{toc}{subsection}{9.4 其他模型与未完成范围}
+
+Qwen 旧训练侧开发共 10 次 HTTP：首答 Direct 3/\allowbreak{}6、Model 2/\allowbreak{}2，另有 2 次 repair 均失败，协议与 Spark 不同，不横向排名。GLM smoke 计划 12，记录 10 次尝试、6 个完整响应、3 个有效解，随后因控制台计费门禁暂停；test 调用为 0。模型名单上的历史 6/\allowbreak{}9 与 2,448/\allowbreak{}648 等配置数是计划规模，不是完成量。
+
+
+当前不恢复基于旧混合 reference 池的模型 gap。下一轮先冻结模型请求身份、样本、表达形式、调用预算、后端和重复策略，扩充任务量，再报告首答可行率、按原子失败率、语义门禁通过率、条件质量与全流程成本。对模型版本变化需重新建 cohort，不能把不同日期的“同名 API”无条件混合。
+
+
+\subsection*{9.5 Agent Systems：完整系统能力的独立赛道}
+
+\addcontentsline{toc}{subsection}{9.5 Agent Systems：完整系统能力的独立赛道}
+
+API 轨固定输入和工具条件，Agent Systems 则评价 App/\allowbreak{}CLI 在允许工具、文件和资源条件下交付答案的能力。它更接近真实工作流，也更难隔离模型、软件工具和人工环境配置的贡献，所以不与纯 Direct/\allowbreak{}Model 结果混成一个榜。
+
+
+当前已导出 10 题、30 个公开文件并做可信重生成审计；20 个双后端校准作业覆盖 10 题。另有原生沙箱、代理白名单、合成工具路径和渠道探针。现有校准参考是独立小包的历史证据，不借用撤下方法的混合池恢复质量结论；正式产品会话仍为 0。
+
+
+完整任务准入还需关闭线程/\allowbreak{}内存/\allowbreak{}时间限制、网络边界、运行收据和答案封存。尤其要在写入者停止后取得稳定产物，防止正在写入的文件被提前当作最终答案。探针通过只证明所测路径，不等于整个真实 App 环境已通过隔离验收；参考 BKS 也不构成产品能力上限。后续每个系统单列工具权限、操作/\allowbreak{}调用数、全流程耗时及人工干预，按相同公开任务语义和独立 checker 比较。
+
+
+\section*{10 RRT–JEPA–LoRA 方法线：原理、已有实现与证据}
+
+\addcontentsline{toc}{section}{10 RRT–JEPA–LoRA 方法线：原理、已有实现与证据}
+
+\subsection*{10.1 这条方法线怎样连接 benchmark}
+
+\addcontentsline{toc}{subsection}{10.1 这条方法线怎样连接 benchmark}
+
+benchmark 提供可信问题、来源与验收，方法线研究如何利用任务变化和历史经验改进路由。旧研究从“成本变化\ensuremath{\rightarrow}路线变化\ensuremath{\rightarrow}solver 适应\ensuremath{\rightarrow}迁移”展开，随后转向“历史状态\ensuremath{\rightarrow}未来决策表示\ensuremath{\rightarrow}候选生成/\allowbreak{}排序\ensuremath{\rightarrow}闭环记忆”。二者相互支持，但历史模型结果来自旧数据与开发协议，尚未成为新 benchmark 的正式神经基线成绩。
+
+
+本节历史进度依据本地保存且曾核验的运行产物、配置和结果副本，不声称本次重新登录服务器核对所有作业。父项目状态存在早期计划与后续执行更新并存的情况，采用有日期的较新结果，不能把早期“未实现”覆盖后续真实实现，也不能把后续局部成功扩展成全部正式 Gate 完成。
+
+
+\subsection*{10.2 表示学习为什么应关注决策，而非所有数值变化}
+
+\addcontentsline{toc}{subsection}{10.2 表示学习为什么应关注决策，而非所有数值变化}
+
+问题表示 \ensuremath{z_{X}} 编码可见成本与规则，路线表示 \ensuremath{z_{\mathrm{\pi}}} 描述有向边或行为，功能适应表示 \ensuremath{z_{A}} 描述固定 solver 在共同 probes 上的策略变化；LoRA 系数是执行参数控制空间。这些对象没有理由天然共享同一流形，也不要求一一对应。
+
+
+闭合、必访 Hamiltonian ATSP 有一个有用控制：
+
+
+\begin{equation}
+D'_{ij}=aD_{ij}+u_i+v_j,\quad a>0
+\quad\Longrightarrow\quad
+C_{D'}(\pi)=aC_D(\pi)+\sum_i u_i+\sum_jv_j.
+\end{equation}
+
+每个节点恰好一次出边和入边，行列势对所有 tour 都加同一常数，因此路线排序不变。这说明大的矩阵数值变化也可能没有决策变化。相反，少数关键有向边变化可能翻转最佳路线。该恒等式是已知结构控制，不是本工作的新增定理；对可选点、自由终点、时间窗或时间依赖路径，额外项不再必然常数，不能直接推广。
+
+
+N1 因此比较行列势/\allowbreak{}尺度 nuisance 与范数匹配的局部边扰动，检验表示是否区分“数值变但决策不变”和“决策真的改变”。代数残差、raw cost 和路线几何必须作为强基线；仅显示 latent 可视化分群不能证明学到决策结构。
+
+
+\subsection*{10.3 LoRA：低参数适应与功能表示}
+
+\addcontentsline{toc}{subsection}{10.3 LoRA：低参数适应与功能表示}
+
+已有 URS 骨干配置为 embedding 256、5 层 encoder、16 heads、qkv\_\allowbreak{}dim 16、FF 512。每层 row/\allowbreak{}column/\allowbreak{}relation 的 q/\allowbreak{}k/\allowbreak{}v 共 45 组更新；standard static rank-4 LoRA 含 90 个 A/\allowbreak{}B 张量、92,160 个可训练参数，当前 scaling=1。骨干冻结，通过 POMO REINFORCE 和 AdamW 更新 adapter。一般 LoRA 定义为[9]：
+
+
+\begin{equation}
+W'=W+\frac{\alpha}{r}BA.
+\end{equation}
+
+实际本轮缩放按具体配置取值，不能把论文默认值直接套到 checkpoint。rank-8 是需新训练的候选，不是把 rank-4 文件改配置即可。旧 global 对照是提供的初始化 adapter，不是按本次城市分区新训练的全局模型。
+
+
+骨干的矩阵建模不是简单把经纬度输入欧氏 encoder。实际每层设 row、column、relation 三路：row 读取有向矩阵，column 读取其转置，relation 在有对应关系输入时聚合，再拼接映射回节点表示并做前馈更新。出边与入边通道分开，能够表达方向不对称；场景表示调制各路成本偏置，decoder 再结合当前访问/\allowbreak{}资源状态选动作。这解释了低秩更新为何放在各路 q/\allowbreak{}k/\allowbreak{}v 投影，也说明只有模型层支持关系输入，不等于已具备 benchmark 全部 14 原子的环境和掩码适配。
+
+
+直接比较 A/\allowbreak{}B 有 gauge 歧义：对可逆 R，BR 与 R\textasciicircum{}-1A 的乘积仍是 BA。因此功能研究在完全相同、合法的 probe 状态上比较适应前后 log-policy shift，并在可行动作内中心化。功能相似性依赖骨干、训练预算、随机性和 probes，不是任务独立的固有标签。fit probes 只来自训练侧，audit probes 锁定；目标城市 own adapter 仅可作离线上限，不给部署链选答案。
+
+
+旧 LoRA pilot 和 S1 已有适应收益；功能响应与 147 组有向 adapter transfer 也有开发实验，但距离引导迁移的增量未获支持，正式完整 Gate 未完成。该结论支持继续检验 solver-conditioned adaptation，不支持已经学得可泛化控制流形。shared basis 与 conditional LoRA 仍需独立验证秩、可部署输入及迁移质量。
+
+
+\subsection*{10.4 JEPA-style 未来预测的实际结构}
+
+\addcontentsline{toc}{subsection}{10.4 JEPA-style 未来预测的实际结构}
+
+已有时序实现以冻结 solver 编码历史矩阵，预测未来 encoded\_\allowbreak{}nodes，并将预测残差融合到当前表示；decoder 还可读取合法历史有向边偏好。它采用固定 teacher，是 JEPA-style latent 预测，不是同构 EMA teacher 与在线 encoder 的完整联合训练。I-JEPA 原工作研究图像自监督表示[10]，不能把其成功直接当作路由未来预测已被证明。
+
+
+面向真实时间的新协议拟用小型时间条件预测器：
+
+
+\begin{equation}
+H_t=E_0(D_t,X),\qquad
+\widehat H_{t+\Delta}=H_t+
+g_\phi(H_{\le t},\Delta,\text{calendar},\text{mask}).
+\end{equation}
+
+可见输入只含截止时刻已发布状态；未来 teacher 表示只作训练标签或事后评价。固定 teacher 避免目标跟预测器一起漂移，但不保证可预测 latent 部分与路线有关。应同时测 persistence 相对 skill、变化方向、方差和行为 probe，而不是只看 latent MSE 降低。
+
+
+训练设计可写为：
+
+
+\begin{equation}
+\mathcal L=\mathcal L_{\rm RL}
++\lambda_H\mathcal L_{\rm future\ latent}
++\lambda_B\mathcal L_{\rm future\ preference}.
+\end{equation}
+
+\ensuremath{\lambda_{H}}=0 的同架构、同历史、同 fusion、同 RL 预算对照是必须项；\ensuremath{\lambda_{B}} 单独消融。若偏好标签来自未来路线成本，属于决策监督，不能把整个过程称为纯无监督。EMA、防坍塌或额外正则先逐项定义，再实验，不用堆组件代替机制证据。
+
+
+从理论上也不能预设 latent 必然优于矩阵预测。若可行路线集合在决策时固定，风险中性目标仅为未来线性边成本，则：
+
+
+\begin{equation}
+\mathbb E[C_{t+\Delta}(\pi)\mid\mathcal F_d]
+=\sum_{(i,j)\in E(\pi)}
+\mathbb E[D_{t+\Delta,ij}\mid\mathcal F_d].
+\end{equation}
+
+因此完美的条件均值矩阵已经足以表达该决策目标，JEPA 的潜在优势应来自有限数据/\allowbreak{}计算下更容易学习的任务相关结构、搜索效率或特定风险/\allowbreak{}约束，而不是声称原则上超过完美矩阵预测。若未来时间窗、机会约束或非线性风险改变可行性，上述简化不再充分，需要另行定义随机优化任务。
+
+
+决策偏好目标可以预测两个合法候选的未来相对价值：
+
+
+\begin{equation}
+m_{t+\Delta}(\pi_a,\pi_b)=
+\frac{C_{t+\Delta}(\pi_a)-C_{t+\Delta}(\pi_b)}{s_d},
+\qquad s_d>0.
+\end{equation}
+
+尺度 \ensuremath{s_{d}} 由当时可见信息确定，候选也只由合法历史产生；未来矩阵仅用于训练标签与事后审计。它把表示关注点从全矩阵重建转向“哪些变化会让应选路线改变”，但要与直接预测这一 margin 的 ridge/\allowbreak{}MLP、以及只有偏好监督而无 latent loss 的模型比较，才能检验 JEPA 的独立作用。
+
+
+\subsection*{10.5 为什么必须拆开候选生成、排序与闭环}
+
+\addcontentsline{toc}{subsection}{10.5 为什么必须拆开候选生成、排序与闭环}
+
+给定合法历史生成候选集合 \ensuremath{P_{t}}，ranker 选择路线，然后该实际输出进入下一轮记忆。总改善可能来自候选更好、排序更准或记忆反馈更稳。若候选变了、ranker 也变了、记忆轨迹又变了，仅比较最终成本无法确定 JEPA 的作用。
+
+
+已有 P0-A 固定候选和公共记忆，只换当前/\allowbreak{}预测/\allowbreak{}真未来评分；P0-B 比较生成器\ensuremath{\times}ranker；P0-C 才让不同系统的真实选定输出进入各自下一轮。候选 oracle-best 只是有限候选池上限，不是整个路由问题最优。未来 latent 距离也不能未经训练就充当路线耗时，需有标定的价值或偏好头。
+
+
+旧数据三 seed P0-A/\allowbreak{}B/\allowbreak{}C 已执行，并审计约 1,584,000 条候选。joint 的预测排序增量在公共记忆为 +0.02118\%，独立闭环为 +0.04563\%，属于开发证据，尚不足以宣布新城市 JEPA 增益。旧 37 帧及反复使用的 26–36 段不再是全新的独立测试。
+
+
+\subsection*{10.6 已有正负结果对方法方向的约束}
+
+\addcontentsline{toc}{subsection}{10.6 已有正负结果对方法方向的约束}
+
+旧 URS 时序回测中，persistence-fusion＋闭环相对最近矩阵基线改善 4.319\%，joint＋闭环 4.437\%；joint 相对 persistence 的配对增量约 0.121\%，描述性区间跨零。总收益主要证据指向融合/\allowbreak{}记忆，不能全部归因于 latent 辅助目标。
+
+
+MatNet 三方法\ensuremath{\times}三 seed\ensuremath{\times}2,000 epochs 已完成九次训练及封存测试；真实历史相对独立训练的无历史模型平均收益为 \ensuremath{-}0.02238\%，描述性 95\% 区间 [\ensuremath{-}0.05596\%,+0.00653\%]。同一个模型把历史归零的消融不能替代独立训练的无历史基线；否则可能只证明模型依赖某个输入通道。
+
+
+10 月 8 日探索中，固定 MatNet 路线 latent JEPA-style 预测的验证误差较 persistence 下降 31.2\%，但验证选择关闭其决策影响，路线价值 MLP 还出现负迁移。预测误差改进没有自动转化为路线收益，正是后续应测决策目标与选择损失的原因。
+
+
+较稳定的旧方案是无需新增神经权重的预算自适应记忆：从当前矩阵 N 个 NN 起点中取前 16 个，合法历史路线只有在当前成本不超过原最佳 NN 的 1.1 倍时进入候选，做保持方向的长度 1/\allowbreak{}2/\allowbreak{}3 片段 relocate；短预算保留 3 条记忆、长预算 1 条，预留退出余量。与相同最大时间、16 起点和相同编辑集合的当前搜索比较，独立合成序列 S1 平均成本下降 0.568\%/\allowbreak{}0.435\%，提前一个 index 的 S2 为 0.639\%/\allowbreak{}0.336\%。shock 条件仍退化 0.434\%/\allowbreak{}0.145\%，不作逐实例保证。
+
+
+旧真实 11 帧开发回测 120/\allowbreak{}240 ms 改善 2.908\%/\allowbreak{}0.828\%，其中数据反复开发、存在特定异常边处理，不能当新城市独立确认。上述结果要求新方法必须与强当前搜索、persistence、合法历史记忆和等预算修复比较；JEPA 若没有额外收益，应接受简单方法更适合当前任务的结论。
+
+
+\section*{11 未来快照任务与真实时间实验}
+
+\addcontentsline{toc}{section}{11 未来快照任务与真实时间实验}
+
+\subsection*{11.1 S1、S2、S3 分别在解决什么}
+
+\addcontentsline{toc}{subsection}{11.1 S1、S2、S3 分别在解决什么}
+
+S1 在当前完整矩阵可用后求解并在同矩阵评分；S2 在当前时刻锁定路线，在未来指定固定快照上评价；S3 则在执行过程中按到达时间切换边耗时，是更强的时间依赖路由。当前 benchmark 实现 S2 的输入/\allowbreak{}配对/\allowbreak{}评分基础，不等于已实现 S3。每日 10 个非均匀观察点也不足以直接提供每分钟真实行驶成本。
+
+
+设决策时刻为当前完整输入的实际 available time d，目标快照名义时刻为 t。普通方法只能访问：
+
+
+\begin{equation}
+\mathcal F_d=
+\{D_s:\operatorname{available}(D_s)\le d,\ 
+\operatorname{nominal}(D_s)\le\operatorname{nominal}(D_{\rm current})\}.
+\end{equation}
+
+当前配对还要求目标名义时刻和目标实际观察开始均晚于 d，且城市、节点顺序、provider 与序列身份一致。输入不仅看文件日期，还看实际收到时间；晚到的“过去名义时段”在收到前不属于可见历史。
+
+
+\subsection*{11.2 Static、Reactive、Oracle 如何比较}
+
+\addcontentsline{toc}{subsection}{11.2 Static、Reactive、Oracle 如何比较}
+
+Static 使用当天首个完全可用快照；Reactive 使用最近合法快照；预测方法用同一合法历史预测目标；Oracle 额外读取指定未来矩阵。所有候选最终在同一个未来固定矩阵上由 checker 评价，场景参数在静态的 ex ante 规则下生成，不能围绕未来答案再造有利业务约束。
+
+
+形式上，方法在 d 时刻输出 \ensuremath{\pi_{d}}，评价使用 \ensuremath{C_{t}}(\ensuremath{\pi_{d}})。名义相邻时段相差 3,600 秒，不等于实际提前量恰好 1 小时；若当前完整收到已晚 4 分钟，实际提前只有约 56 分钟。报告同时列 nominal horizon 与 actual lead，避免用计划值覆盖真实时钟。
+
+
+未来成本变化还可能令原时间窗/\allowbreak{}资源方案不可行，因此 S2 同时报告未来可行率与有效路线质量；不能只筛掉失败路线再算收益。启发式 Oracle 可能比普通方法更差，负差值不应强制截零；只有获得严格精确且有效的未来解时才构成相应目标的全局界。
+
+
+\subsection*{11.3 当前完成范围与时间划分}
+
+\addcontentsline{toc}{subsection}{11.3 当前完成范围与时间划分}
+
+当前 formal production future-snapshot 运行数为 0。已有 18 个 commissioning 诊断与小规模精确校准，属于链路验证，不是完整生产成绩。历史方法线有 index 提前规划实验，但不能替代本轨真实时间、available time 与来源分层的确认。
+
+
+计划按 14 天序列研究 8/\allowbreak{}2/\allowbreak{}4 的训练/\allowbreak{}验证/\allowbreak{}测试日期划分；这还是待完整 QA 后冻结的方案，不是已封存完成的事实。训练样本的未来标签必须在训练截止前发布，跨边界标签 purge；验证/\allowbreak{}测试推理可以使用当时确实已发布的较早历史，但不自动允许更新参数。归一化、重建、teacher、阈值与参考选择只在相应允许分区拟合。
+
+
+\section*{12 实验协议与统计方法}
+
+\addcontentsline{toc}{section}{12 实验协议与统计方法}
+
+\subsection*{12.1 先分解覆盖，再比较质量}
+
+\addcontentsline{toc}{subsection}{12.1 先分解覆盖，再比较质量}
+
+每项方法至少报告计划题数、实际启动、已终止、SUPPORTED/\allowbreak{}UNSUPPORTED、有效、无 incumbent、超时、异常和语义失败。有效率以预登记任务分母计算；条件质量以有效且有参考的子集计算，并同时给出子集规模，避免通过不输出困难题提高平均质量。不同支持范围的方法先在共同支持子集比较，再另报覆盖能力。
+
+
+相对差定义为方向一致的“越小越好”值：
+
+
+\begin{equation}
+g(\pi)=
+\begin{cases}
+\frac{f(\pi)-f_{\rm ref}}{|f_{\rm ref}|},&\text{最小化},\\
+\frac{f_{\rm ref}-f(\pi)}{|f_{\rm ref}|},&\text{最大化}.
+\end{cases}
+\end{equation}
+
+参考为零或缺失时不定义该比值。BKS 是观测池中的最佳有效候选，不是最优性保证；候选若参与产生 BKS，会带来自包含偏差。后续可增加 leave-one-method-out 参考敏感性分析，但当前不把该计划写成已经实现。
+
+
+\subsection*{12.2 质量—预算曲线与公平资源}
+
+\addcontentsline{toc}{subsection}{12.2 质量—预算曲线与公平资源}
+
+预算不仅是 solver time\_\allowbreak{}limit，还包括构建、编码、采样、POMO rollout、检索、预测、排序、repair 与输出处理。训练成本、teacher 标签生成、冷启动、warm inference 分开列；相同更新数不等于相同 RL 样本数，也不等于相同墙钟。并行 worker、CPU 线程和 GPU 共享负载会改变结果，应固定或披露。
+
+
+每种方法先报告预登记首个种子结果，再按独立种子协议聚合。any-seed-best 是额外搜索，应独立成列；多次 LLM 重试同理。给定 1 秒、10 秒、60 秒等预算的曲线比单点更能区分初始化、搜索速度和最终质量，但具体档位要按各题规模预登记，不能看到 test 曲线再挑优势档。
+
+
+\subsection*{12.3 配对与聚类：独立单位是什么}
+
+\addcontentsline{toc}{subsection}{12.3 配对与聚类：独立单位是什么}
+
+同城嵌套规模、同底座派生场景、同帧多个 mask 和同题多个 seed 都相关。城市留出主分析先在实例内配对，再在父组/\allowbreak{}城市聚合；组合分析按共享城市\ensuremath{\times}规模底座聚合；时间分析至少按城市日期或完整序列聚类。OD 格子只是测量单元，不是数百万独立统计样本。
+
+
+已有 paired\_\allowbreak{}city\_\allowbreak{}bootstrap 接口要求每个 instance ID 唯一，重复需先按协议归并，缺失/\allowbreak{}非有限成对值记录剔除数量。对每个城市计算配对差均值，再对城市均值等权宏平均；对城市均值重采样 2,000 次，seed=20261015，取 2.5\% 和 97.5\% 分位数。当前静态 test 仅 4 城，区间主要用于描述有限城市样本不确定性，不支持全国总体或强显著性结论。
+
+
+\subsection*{12.4 对照实验要回答的机制问题}
+
+\addcontentsline{toc}{subsection}{12.4 对照实验要回答的机制问题}
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.2200\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3700\linewidth-2\tabcolsep\relax}P{\dimexpr 0.4100\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{研究主张} & \textbf{必要对照} & \textbf{若不成立应如何解释}\\
+\midrule\endfirsthead
+\toprule
+\textbf{研究主张} & \textbf{必要对照} & \textbf{若不成立应如何解释}\\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+真实道路结构影响能力 & 同节点欧氏/\allowbreak{}对称化诊断、有向原矩阵；分别计价 & 不能只以数据来源真实证明方法更难\\
+模型理解组合规则 & 原子移除控制、语义闭包暴露、难度匹配 & 失败可能来自求解难度或表达长度\\
+神经表示提升决策 & raw cost、代数残差、同网络无辅助目标 & latent 误差下降可能无决策价值\\
+历史有独立作用 & 独立训练 no-history、打乱历史、强当前修复 & 同模型归零只证明依赖通道\\
+JEPA 带来增量 & 同历史/\allowbreak{}fusion/\allowbreak{}RL预算，\ensuremath{\lambda_{H}}=0；显式矩阵预测 & 总收益可来自记忆、监督或计算\\
+LoRA 有可迁移作用 & frozen、提供的 global、随机/\allowbreak{}近邻 adapter & own-adapter 改善不等于可预测迁移\\
+LLM Model 更会优化 & 固定 backend、语义通过率和总时间分解 & 改善可能全部来自 solver\\
+预测改善未来执行 & persistence、同刻基线、oracle、相同候选 & 候选变好与排序变好需分开\\
+混合 repair 有效 & 同次数/\allowbreak{}时间的非神经 repair & 额外搜索不能全算模型贡献\\
+\end{longtable}\endgroup
+
+这些对照不是要求一次性跑完所有笛卡尔积，而是把主张与最小必要证据对应。先在验证集定位机制，锁定少量正式配置，再做未见城市或日期确认，减少探索自由度和重复使用 test 的风险。
+
+
+\section*{13 当前实现、运行进度与可以成立的结论}
+
+\addcontentsline{toc}{section}{13 当前实现、运行进度与可以成立的结论}
+
+\subsection*{13.1 工程与研究状态总表}
+
+\addcontentsline{toc}{subsection}{13.1 工程与研究状态总表}
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.2200\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3700\linewidth-2\tabcolsep\relax}P{\dimexpr 0.4100\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{工作包} & \textbf{已有实现/\allowbreak{}产物} & \textbf{当前未完成边界}\\
+\midrule\endfirsthead
+\toprule
+\textbf{工作包} & \textbf{已有实现/\allowbreak{}产物} & \textbf{当前未完成边界}\\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+统一规范与 checker & 四目标、14 原子、归一化、独立重算、错误分层 & 不等于所有外部方法均支持\\
+静态底座 & 12 城、2,400 点、48 对嵌套矩阵 & 未认证实车/\allowbreak{}设施入口，N200 未全量测评\\
+动态观察 & 1,080 账本时段，来源分层已修正 & 活动未结束，最终来源清单/\allowbreak{}发布未完成\\
+缺失重建 & 因果捐赠、Huber/\allowbreak{}空间方法、54 矩阵与回放 & 实际未知格无真值，全流程在线性未证\\
+城市留出任务 & 1,176 题，588/\allowbreak{}196/\allowbreak{}392 & 只覆盖原预设的 8 个显式原子\\
+组合任务 & 1,512 题，1,224/\allowbreak{}72/\allowbreak{}216，792 效果检查 & 同底座交互，不是联合未见城市\\
+静态参考作业 & 5,880 结果/\allowbreak{}收据匹配、历史队列结束 & 撤下 LNS 后新 reference/\allowbreak{}gap 待重建\\
+新组合参考队列 & 432 题、2,086 作业，已落盘 312 & 包含内部未准入方法，仅部分执行完成\\
+外部强基线 & OR-Tools/\allowbreak{}PyVRP 适配及诊断 & 全量补跑与正式准入未完成\\
+LLM & Spark 64、受控表达/\allowbreak{}门禁与失败分析 & 全模型、全任务、匹配预算排名未完成\\
+神经/\allowbreak{}JEPA/\allowbreak{}LoRA & 旧数据有训练、消融、闭环及负结果 & 新 benchmark 接入、独立确认未完成\\
+Agent 系统 & 开发接口/\allowbreak{}探针 & 产品级评测会话为 0，不能列产品榜\\
+未来快照 & 配对、可见性与 checker 链路 & 正式生产运行 0；未实现 S3\\
+\end{longtable}\endgroup
+
+组合队列的 312/\allowbreak{}2,086 是结果及匹配收据计数，不是完成同等数量题，也不是已有同等数量 reference。每题有多个方法/\allowbreak{}种子，内部作业完成必须经过准入和聚合，才成为公开参考。报告可随着下一次快照更新该数，但不编造固定完成日期。
+
+
+\subsection*{13.2 验证证据的时间边界}
+
+\addcontentsline{toc}{subsection}{13.2 验证证据的时间边界}
+
+最近归档全量验收为 541 项、0 失败/\allowbreak{}错误、2 跳过，归档时间 UTC 2026-10-22 16:01:50，即 JST 10 月 23 日 01:01:50。本轮来源分类专项 8 项通过；这不是本轮重跑 541 项。冻结原件哈希核对一致，选中 provider duration/\allowbreak{}mask 哈希无差异，5,880 历史结果及当前组合收据逐项检查匹配。
+
+
+源码发布锁原管理 841 个文件，当前存在 14 个已管理路径差异，主要涉及精选公开包更新；新增文件是否在旧清单中也需另查。当前不能宣称全局 release lock 已通过，不能重写锁文件掩盖差异。报告构建、数学排版和公开包校验作为本次专项交付验收，范围与原全仓测试分别说明。
+
+
+\subsection*{13.3 当前能说什么、还不能说什么}
+
+\addcontentsline{toc}{subsection}{13.3 当前能说什么、还不能说什么}
+
+可以成立的结论是：已经实现具有统一语义和独立验收的路由研究系统，静态与组合题库已形成，来源统计已区分按时观察、错时恢复和重建；现有 LLM 小样存在明显格式/\allowbreak{}语义/\allowbreak{}路线失败，重建方法在指定遮蔽回放上改善误差，旧方法线证明历史复用与预算控制值得作为强基线。
+
+
+尚不能成立的结论包括：所有方法已测完；新 benchmark 上 JEPA/\allowbreak{}LoRA 显著优于强传统方法；未来交通预测已得到新城市确认；所有生产 PASS 都是原时段真实采集；当前 reference 池已完成重建；启发式 Oracle 给出严格最优界；组合测试同时证明未见城市和未见交互泛化。报告保留这些边界，是为了让后续每个结论能对应到具体数据和实验。
+
+
+\section*{14 局限性与有效性威胁}
+
+\addcontentsline{toc}{section}{14 局限性与有效性威胁}
+
+数据层存在目的性选城与类别配额偏差，固定道路访问点不含设施内部通行，provider 预计耗时未经实车外部校准。静态 OSRM 与动态 provider 的图和策略不同，域差异不等同于交通变化；一次矩阵具有采集时间宽度，名义时刻只是索引。派生矩阵和辅助历史源的来源不同，需要分层发布和敏感性分析。
+
+
+任务层的 witness 构造保证可行，却可能偏向特定路线结构。紧度标签与难度不必单调；同底座组合可能把规则泛化与数值记忆混在一起。后续应加入不同生成器、独立无 witness 初始化求解、活跃约束统计和联合城市/\allowbreak{}交互留出，但不能在当前报告中把这些写成已完成。
+
+
+方法层的适配可能引入取整、不可行动作掩码、终止模式和目标转换差异。传统方法支持范围不一，神经权重存在训练域偏差，LLM 服务版本和随机性会变化。预算比较还受冷启动、线程、GPU 竞争和缓存影响。解决办法是完整披露能力与总成本，而不是强迫所有算法在不支持的题上给分。
+
+
+统计层样本相关性强，静态 test 城市仅 4 个，语言小样数量有限，历史方法数据反复用于开发。任何负结果都需区分能力不足、接口错误、预算不足和目标无信息；任何正结果都需检查额外搜索、标签和参考池自包含。现阶段以可复核的描述性结论为主，避免把有限样本区间当作普遍规律。
+
+
+\section*{15 后续研究计划：工作内容、依赖与验收}
+
+\addcontentsline{toc}{section}{15 后续研究计划：工作内容、依赖与验收}
+
+\subsection*{15.1 第一阶段：先完成数据和参考的可信闭环}
+
+\addcontentsline{toc}{subsection}{15.1 第一阶段：先完成数据和参考的可信闭环}
+
+第一项任务是结束 14 天活动后的逐时段归档：锁定计划和实际时间，补齐逐格来源 mask，区分 nominal provider、late recovery、reconstruction 与 quarantine，并列出未覆盖时段。验收标准为每个发布条目都能追溯到原件/\allowbreak{}派生版本、时间、节点和哈希；观察数与估计数可由独立脚本重算。纯观察子集先可用，重建不作为“完成原采集”的替代。
+
+
+第二项任务是重建 reference 池：排除已撤下方法，筛出有效且预算合规候选，重新计算每题 EXACT/\allowbreak{}BKS/\allowbreak{}UNAVAILABLE 和所有下游 gap；逐题保留 checker、solver、bound 与收据。只有完成这一步，才恢复质量汇总。旧池留档且标版本失效，不删失败证据或悄悄改历史日志。
+
+
+第三项任务是完成外部强基线的能力映射和全量补跑。先验收小例子的有向成本、端点、窗口、载荷、关系和目标；再按支持矩阵运行 OR-Tools、PyVRP 等。对尚需开发的启发式/\allowbreak{}元启发式，先锁定出处和代码版本，再入队，不以方法名占位当成果。
+
+
+\subsection*{15.2 第二阶段：静态和组合的正式方法比较}
+
+\addcontentsline{toc}{subsection}{15.2 第二阶段：静态和组合的正式方法比较}
+
+以同一公开实例和独立 checker，比较精确、构造、局部/\allowbreak{}元启发式、神经构造/\allowbreak{}改进、LLM 和混合方法。每个范式先选择有代表且可运行的实现，形成预登记的最小覆盖集；扩展候选作为独立 cohort，不改变已锁定主实验。报告覆盖、首答有效率、逐原子失败、条件质量、质量—预算曲线及总成本。
+
+
+城市实验保留测试城市封存；组合实验使用目标—控制配对并检查训练暴露。增加“同语义不同表达”和合法节点置换，判断模型是否依赖模板/\allowbreak{}位置。若某神经方法仅支持 ATSP，先在该子集公平比较，再开发约束适配，不用旧 ATSP 成绩代表全原子能力。
+
+
+LLM 扩展先保证样本数和请求身份，分别测 Direct、固定后端 Model、受控 repair。额外工具调用和多次采样单独计入预算；若结果仍主要失败在格式或模型转写，应先解决这些瓶颈，而不是直接增加更长的推理链并宣称优化增强。
+
+
+\subsection*{15.3 第三阶段：真实时间上的最小机制实验}
+
+\addcontentsline{toc}{subsection}{15.3 第三阶段：真实时间上的最小机制实验}
+
+首先检验未来信息是否有足够决策价值：同任务比较 Static、Reactive 与合法 Oracle，分离求解噪声；只有经精确解、可靠界或充分求解校准确认信息收益空间较小时，才据此判断复杂预测难以普遍带来大幅收益；若只是某个启发式 Oracle 改善很小，仅说明该求解配置尚未兑现未来信息价值。随后比较 persistence、昨日同刻、简单比例/\allowbreak{}ridge、直接矩阵预测与固定 teacher latent 预测，并保留无 latent loss 强对照。
+
+
+首轮可训练配置最多六类，每类三个预登记 seed：persistence fusion、history RL-only、J-H joint、矩阵预测配同一求解接口、J-H＋J-B、同决策监督无 latent loss。后两类仅在前置验证支持时启动。候选生成数、初始化、排序与修复预算统一，训练和推理成本分别记录；不跑全部参数笛卡尔积后挑测试最好者。
+
+
+P0-A 固定候选只比较 ranker；P0-B 生成\ensuremath{\times}排序交叉；P0-C 实际输出闭环。指标包括未来有效率、最终成本、candidate oracle-best、选择损失、负迁移比例与总耗时。若预测改善了候选上限但没有改善最终选择，工作重点转向 ranker；若候选也没改善，检查表示目标和 decoder 距离通道。
+
+
+\subsection*{15.4 第四阶段：有条件地扩展 JEPA、LoRA 和动态控制}
+
+\addcontentsline{toc}{subsection}{15.4 第四阶段：有条件地扩展 JEPA、LoRA 和动态控制}
+
+只有新数据证明某个分支有增量，才扩展路线偏好监督、预测驱动的保留/\allowbreak{}修复、跨城 LoRA 与联合表示。LoRA 先比较 frozen、小 fusion、现有初始化与 static rank-4 适应；若 teacher 参数变化，重新构建缓存坐标，不混用。conditional LoRA 需要足够多个可信任务适应样本，不能由少量日期就默认 hypernetwork 可泛化。
+
+
+联合 JEPA 必须明确同构 target、EMA 或其他防坍塌方案、梯度流向和诊断；先比较固定 teacher 的不足，再决定是否增加复杂度。S3 需更高频与到达时间相关的成本定义、FIFO/\allowbreak{}插值和完整 horizon 验证，当前低频固定快照不能直接承担。联合未见城市\ensuremath{\times}交互\ensuremath{\times}日期也应单独设计，而非把三条独立结果拼成一个最强结论。
+
+
+\subsection*{15.5 分工与交付物}
+
+\addcontentsline{toc}{subsection}{15.5 分工与交付物}
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.1800\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3700\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2000\linewidth-2\tabcolsep\relax}P{\dimexpr 0.2500\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{工作包} & \textbf{实际任务与交付物} & \textbf{前置依赖} & \textbf{完成判据}\\
+\midrule\endfirsthead
+\toprule
+\textbf{工作包} & \textbf{实际任务与交付物} & \textbf{前置依赖} & \textbf{完成判据}\\
+\midrule\endhead
+\midrule\multicolumn{4}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+数据/\allowbreak{}来源 & 时段清单、逐格 mask、观察/\allowbreak{}恢复/\allowbreak{}重建统计、数据卡 & 活动归档、原件可读 & 独立重算一致，未知不混入观察\\
+任务/\allowbreak{}checker & 生成器偏差与活跃性审计、反事实控制、split 锁 & 现有题库版本 & 私有信息隔离、同源分组无泄漏\\
+精确/\allowbreak{}reference & 准入池、逐题证据、新 gap 和版本 & 撤下方法名单、checker & 最优/\allowbreak{}可行/\allowbreak{}未知分类可复核\\
+启发式/\allowbreak{}外部 & 支持矩阵、出处版本、统一预算结果 & 语义小例子 & 不删约束，收据/\allowbreak{}重算一致\\
+神经算法 & cost encoder、状态掩码、训练暴露、权重哈希 & 数据分区、能力映射 & 无 witness 泄漏，独立可行验收\\
+LLM/\allowbreak{}工具 & 样本与请求身份、首答/\allowbreak{}重复/\allowbreak{}修复分层 & 固定后端和预算 & 语义失败保留，方法贡献可拆解\\
+时间/\allowbreak{}JEPA & 因果输入、P0 三步、等预算消融 & 完整时间序列与强基线 & 新日期确认，独立预测/\allowbreak{}决策增量\\
+汇总/\allowbreak{}发布 & 全文报告、机器可读快照、公开包校验 & 上述证据 & 每项声明对应版本与核验时点\\
+\end{longtable}\endgroup
+
+当前按工作包描述责任范围，不虚构人员姓名或承诺尚无资源依据的日期。阶段之间有真实依赖，但独立的适配、小例子校验与报告整理可以并行推进；正式 test 不用于反复选择方案。
+
+
+\section*{16 结论}
+
+\addcontentsline{toc}{section}{16 结论}
+
+本工作已经建立真实城市有向成本与统一业务规则结合的路由任务体系，形成了独立验收、来源分层、城市留出和组合留出的实际实现。当前最有价值的进展不只是任务数量，而是把规则理解、可行性、优化质量、数据真实性与未来信息边界拆成可检查的环节。
+
+
+研究尚处于“基础设施与小样诊断完成较多，强方法全量比较与新时间数据独立确认未完成”的阶段。后续以可信 reference、充分传统/\allowbreak{}神经/\allowbreak{}LLM 对照和等预算机制实验推进；JEPA、LoRA 或复杂工具系统的贡献由独立增量证据决定。历史正负结果均保留，用来约束下一轮假设，而不用于提前包装最终结论。
+
+
+\section*{参考文献}
+
+\addcontentsline{toc}{section}{参考文献}
+
+以下文献仅用于说明方法来源，正文已完整解释本工作实际采用或计划检验的机制；不要求读者跳转其他项目文档才能理解报告。
+
+
+[1] Uchoa E, Pecin D, Pessoa A, Poggi M, Vidal T, Subramanian A. New benchmark instances for the Capacitated Vehicle Routing Problem. European Journal of Operational Research, 2017, 257(3):845–858. DOI:10.1016/\allowbreak{}j.ejor.2016.08.012.
+
+
+[2] Kool W, van Hoof H, Welling M. Attention, Learn to Solve Routing Problems! International Conference on Learning Representations, 2019. arXiv:1803.08475.
+
+
+[3] Kwon Y D, Choo J, Kim B, Yoon I, Gwon Y, Min S. POMO: Policy Optimization with Multiple Optima for Reinforcement Learning. Advances in Neural Information Processing Systems, 2020, 33:21188–21198. arXiv:2010.16011.
+
+
+[4] Shaw P. Using Constraint Programming and Local Search Methods to Solve Vehicle Routing Problems. Principles and Practice of Constraint Programming, 1998:417–431. DOI:10.1007/\allowbreak{}3-540-49481-2\_\allowbreak{}30.
+
+
+[5] Ropke S, Pisinger D. An Adaptive Large Neighborhood Search Heuristic for the Pickup and Delivery Problem with Time Windows. Transportation Science, 2006, 40(4):455–472. DOI:10.1287/\allowbreak{}trsc.1050.0135.
+
+
+[6] Google OR-Tools. Routing Options and Routing Solver Documentation. 官方技术文档；本报告的运行身份以历史安装记录和适配器配置为准。
+
+
+[7] Wouda N A, Lan L, Kool W. PyVRP: A High-Performance VRP Solver Package. INFORMS Journal on Computing, 2024, 36(4):943–955. DOI:10.1287/\allowbreak{}ijoc.2023.0055.
+
+
+[8] Xin L, Song W, Cao Z, Zhang J. NeuroLKH: Combining Deep Learning Model with Lin–Kernighan–Helsgaun Heuristic for Solving the Traveling Salesman Problem. Advances in Neural Information Processing Systems, 2021, 34. arXiv:2110.07983.
+
+
+[9] Hu E J, Shen Y, Wallis P, Allen-Zhu Z, Li Y, Wang S, Wang L, Chen W. LoRA: Low-Rank Adaptation of Large Language Models. International Conference on Learning Representations, 2022. arXiv:2106.09685.
+
+
+[10] Assran M, Duval Q, Misra I, Bojanowski P, Vincent P, Rabbat M, LeCun Y, Ballas N. Self-Supervised Learning from Images with a Joint-Embedding Predictive Architecture. IEEE/\allowbreak{}CVF Conference on Computer Vision and Pattern Recognition, 2023:15619–15629. arXiv:2301.08243.
+
+
+\clearpage\begingroup\small\linespread{1.1}\selectfont\setlist[enumerate]{itemsep=1pt,topsep=3pt}
+
+\section*{附录 A 关键符号与实现对象对应}
+
+\addcontentsline{toc}{section}{附录 A 关键符号与实现对象对应}
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{P{\dimexpr 0.2200\linewidth-2\tabcolsep\relax}P{\dimexpr 0.3700\linewidth-2\tabcolsep\relax}P{\dimexpr 0.4100\linewidth-2\tabcolsep\relax}}
+\toprule
+\textbf{符号/\allowbreak{}对象} & \textbf{含义} & \textbf{实际实现责任}\\
+\midrule\endfirsthead
+\toprule
+\textbf{符号/\allowbreak{}对象} & \textbf{含义} & \textbf{实际实现责任}\\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\footnotesize 接下页}\endfoot
+\bottomrule\endlastfoot
+BaseInstance & 节点、矩阵、来源与可用时间 & 加载/\allowbreak{}哈希/\allowbreak{}单位/\allowbreak{}节点身份\\
+Scenario & 目标、访问、车队、端点、原子参数 & normalizer 与语义签名\\
+Solution & 使用车辆及有序访问路线 & solver/\allowbreak{}model 只提交候选\\
+C、T、L & 成本、耗时、物理距离 & 别名显式声明，checker 分别重算\\
+\ensuremath{y_{i}}、\ensuremath{y_{ki}}、\ensuremath{z_{k}} & 选客户、客户分车、用车 & MILP 决策与解码检查\\
+B、D、F & 服务开始、离开、完成时刻 & 时间递推、窗口、时长\\
+q、Q & 途中载荷与容量 & 配送与取送分别处理\\
+observed mask & 格子是否来自目标实际观察 & 重建保持观察不变、发布分层\\
+nominal/\allowbreak{}actual/\allowbreak{}available & 索引时刻、实际观察、收到时刻 & 采集分类与未来输入可见性\\
+effective/\allowbreak{}instance signature & 语义配置/\allowbreak{}完整实例身份 & 去重、暴露与分区\\
+EXACT/\allowbreak{}BKS/\allowbreak{}UNAVAILABLE & 已证最优/\allowbreak{}池中最好/\allowbreak{}无可用参考 & 版本化准入后生成\\
+\ensuremath{z_{X}}、\ensuremath{z_{\mathrm{\pi}}}、\ensuremath{z_{A}} & 问题、路线与功能适应表示 & 科学对象不同，不强迫同一流形\\
+\end{longtable}\endgroup
+
+\section*{附录 B 两条端到端算法流程}
+
+\addcontentsline{toc}{section}{附录 B 两条端到端算法流程}
+
+\subsection*{B.1 数据到任务再到可验收结果}
+
+\begin{enumerate}
+
+\item 固定真实来源、城市节点、顺序与静态矩阵版本；动态观察另绑定实际时间和 mask。
+
+\item 按目标、车队、终点和原子生成 Scenario，用私有 witness 设定可行余量。
+
+\item 归一化、检查语义闭包，计算实例签名，去重并按城市/\allowbreak{}父组/\allowbreak{}日期冻结分区。
+
+\item 从公开实例构造方法输入；不向模型或 solver 暴露 witness、未来真值或私有参考。
+
+\item 运行候选方法，记录版本、预算、种子、请求、失败与结果收据。
+
+\item checker 独立重算；区分有效、unsupported、无解未知、超时和错误。
+
+\item 仅合格候选进入版本化参考池；按目标方向生成质量指标并按独立单位聚合。
+
+\item 发布全文说明、机器可读统计与校验，不将派生值或未执行任务写成已采集/\allowbreak{}已完成。
+
+\end{enumerate}
+
+\subsection*{B.2 未来表示到闭环路线决策}
+
+\begin{enumerate}
+
+\item 在实际决策时刻 d 构造合法历史，只读取 available\ensuremath{\le}d 的输入。
+
+\item 用 persistence、显式矩阵或 latent predictor 生成目标状态估计，记录所有预处理版本。
+
+\item 当前搜索、合法历史记忆和神经策略产生候选，候选数与总机会受统一预算约束。
+
+\item ranker 仅用当时合法输入选路线；真未来只用于声明的 Oracle 或事后评价。
+
+\item 锁定输出，再在指定未来快照下检查可行性并重算目标，不事后重新挑路线。
+
+\item 把该分支实际输出写入自身下一轮记忆；失败与回退也进入闭环记录。
+
+\item 通过固定候选、生成\ensuremath{\times}排序交叉和独立闭环三步，区分预测、搜索与记忆的贡献。
+
+\end{enumerate}\endgroup
+\end{document}
