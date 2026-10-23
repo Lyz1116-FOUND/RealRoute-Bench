@@ -1,8 +1,12 @@
 {
-  "snapshot_at": "2026-10-19T06:15:45.768891+00:00",
+  "schema": "realroute.public_progress.v4",
+  "snapshot_at": "2026-10-23T16:04:05.760413+00:00",
+  "snapshot_at_jst": "2026-10-24T01:04:05.760539+09:00",
+  "repository_visibility_observed": "public",
   "collection": {
-    "schema": "realroute.collection_progress.v2",
-    "snapshot_at": "2026-10-19T06:15:45.768891+00:00",
+    "schema": "realroute.collection_progress.v4",
+    "snapshot_at": "2026-10-23T16:04:05.760413+00:00",
+    "snapshot_at_jst": "2026-10-24T01:04:05.760539+09:00",
     "timezone": "Asia/Shanghai",
     "series_id": "realroute-fresh-20261015-mac-v1",
     "window": {
@@ -16,115 +20,183 @@
       "od_entries_per_complete_frame": 39800
     },
     "progress": {
-      "current_day": 5,
-      "complete_real_pass_frames": 522,
-      "quarantined_frames": 18,
-      "recorded_slots": 540,
+      "recorded_slots": 1080,
       "states": {
-        "PASS": 522,
-        "QUARANTINE": 18
+        "PASS": 1080
       },
-      "recorded_slot_percentage": 32.14,
-      "complete_frame_percentage": 31.07,
-      "complete_frame_od_time_values": 20775600,
+      "complete_provider_nominal_frames": 1005,
+      "late_recovery_provider_frames": 17,
+      "reconstructed_frames": 58,
+      "unverified_frames": 0,
+      "provider_complete_frames_including_late_recovery": 1022,
+      "recorded_slot_percentage": 64.29,
+      "nominal_provider_percentage_of_plan": 59.82,
+      "nominal_provider_od_time_values": 39999000,
+      "provider_od_time_values_including_late_recovery": 40675600,
+      "current_ledger_quarantined_slots": 0,
       "final_dynamic_release_completed": false
     },
     "daily": [
       {
         "date": "2026-10-15",
-        "complete_real_pass_frames": 116,
-        "quarantined_frames": 4,
+        "nominal_provider": 116,
+        "reconstructed": 4,
         "recorded_slots": 120
       },
       {
         "date": "2026-10-16",
-        "complete_real_pass_frames": 106,
-        "quarantined_frames": 14,
+        "nominal_provider": 106,
+        "reconstructed": 14,
         "recorded_slots": 120
       },
       {
         "date": "2026-10-17",
-        "complete_real_pass_frames": 120,
-        "quarantined_frames": 0,
+        "nominal_provider": 120,
         "recorded_slots": 120
       },
       {
         "date": "2026-10-18",
-        "complete_real_pass_frames": 120,
-        "quarantined_frames": 0,
+        "nominal_provider": 120,
         "recorded_slots": 120
       },
       {
         "date": "2026-10-19",
-        "complete_real_pass_frames": 60,
-        "quarantined_frames": 0,
-        "recorded_slots": 60
+        "nominal_provider": 112,
+        "late_recovery_provider": 3,
+        "reconstructed": 5,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-20",
+        "nominal_provider": 111,
+        "reconstructed": 9,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-21",
+        "nominal_provider": 108,
+        "late_recovery_provider": 2,
+        "reconstructed": 10,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-22",
+        "reconstructed": 16,
+        "late_recovery_provider": 12,
+        "nominal_provider": 92,
+        "recorded_slots": 120
+      },
+      {
+        "date": "2026-10-23",
+        "nominal_provider": 120,
+        "recorded_slots": 120
       }
     ],
     "cities": [
       {
+        "city": "anji",
+        "nominal_provider": 84,
+        "reconstructed": 5,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
+      },
+      {
         "city": "beijing",
-        "complete_real_pass_frames": 43,
-        "quarantined_frames": 2
-      },
-      {
-        "city": "shanghai",
-        "complete_real_pass_frames": 43,
-        "quarantined_frames": 2
-      },
-      {
-        "city": "xian",
-        "complete_real_pass_frames": 44,
-        "quarantined_frames": 1
-      },
-      {
-        "city": "chongqing",
-        "complete_real_pass_frames": 43,
-        "quarantined_frames": 2
+        "nominal_provider": 83,
+        "reconstructed": 4,
+        "late_recovery_provider": 3,
+        "recorded_slots": 90
       },
       {
         "city": "chengdu",
-        "complete_real_pass_frames": 44,
-        "quarantined_frames": 1
+        "nominal_provider": 83,
+        "reconstructed": 6,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
       },
       {
-        "city": "hangzhou",
-        "complete_real_pass_frames": 44,
-        "quarantined_frames": 1
-      },
-      {
-        "city": "wuhan",
-        "complete_real_pass_frames": 42,
-        "quarantined_frames": 3
-      },
-      {
-        "city": "xiamen",
-        "complete_real_pass_frames": 44,
-        "quarantined_frames": 1
-      },
-      {
-        "city": "sanya",
-        "complete_real_pass_frames": 44,
-        "quarantined_frames": 1
-      },
-      {
-        "city": "yiwu",
-        "complete_real_pass_frames": 44,
-        "quarantined_frames": 1
+        "city": "chongqing",
+        "nominal_provider": 84,
+        "reconstructed": 3,
+        "late_recovery_provider": 3,
+        "recorded_slots": 90
       },
       {
         "city": "dunhuang",
-        "complete_real_pass_frames": 44,
-        "quarantined_frames": 1
+        "nominal_provider": 85,
+        "reconstructed": 4,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
       },
       {
-        "city": "anji",
-        "complete_real_pass_frames": 43,
-        "quarantined_frames": 2
+        "city": "hangzhou",
+        "nominal_provider": 83,
+        "reconstructed": 6,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
+      },
+      {
+        "city": "sanya",
+        "nominal_provider": 85,
+        "reconstructed": 4,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
+      },
+      {
+        "city": "shanghai",
+        "nominal_provider": 84,
+        "reconstructed": 4,
+        "late_recovery_provider": 2,
+        "recorded_slots": 90
+      },
+      {
+        "city": "wuhan",
+        "nominal_provider": 81,
+        "reconstructed": 8,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
+      },
+      {
+        "city": "xiamen",
+        "nominal_provider": 83,
+        "reconstructed": 6,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
+      },
+      {
+        "city": "xian",
+        "nominal_provider": 85,
+        "reconstructed": 4,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
+      },
+      {
+        "city": "yiwu",
+        "nominal_provider": 85,
+        "reconstructed": 4,
+        "late_recovery_provider": 1,
+        "recorded_slots": 90
       }
     ],
-    "counting_rule": "Only production PASS frames count as complete REAL matrices. Quarantined and imputed values do not count as complete REAL frames.",
-    "scope": "Dated aggregate snapshot, not a live monitor; no raw provider data, account identities, balances or credentials."
+    "raw_frame_attempts": {
+      "scope": "All local AMap frame attempts, including commissioning and unused attempts; not unique production slots",
+      "count": 1119,
+      "states": {
+        "PASS": 1038,
+        "QUARANTINE": 81
+      }
+    },
+    "classification": {
+      "nominal_provider": "Production ledger PASS, provider manifest PASS, matching nominal time, actual start within scheduled start tolerance. It is a bounded-window provider estimate, not a measured vehicle trip.",
+      "late_recovery_provider": "A real provider query with a different nominal time or an actual start outside the declared schedule tolerance; not original-slot ground truth.",
+      "reconstructed": "Reference to a derived/reconstructed matrix, including partially observed matrices; estimated cells are not counted as acquired observations.",
+      "unverified": "Unknown provenance, missing timestamps, non-PASS state, or another unaccepted input; never counted as completed acquisition.",
+      "max_start_lateness_s": 330,
+      "reason_flags_used_as_provenance": false,
+      "absolute_paths_normalized_under_explicit_root": true,
+      "legacy_complete_real_pass_frames_field_removed": true
+    },
+    "scope": "Dated aggregate evidence only. Ledger slots, raw attempts, recovered observations, and reconstructed matrices use different denominators. No raw responses, credentials, account details, private routes, or local absolute paths are exported."
   },
   "static": {
     "cities": 12,
@@ -132,64 +204,130 @@
     "matrix_pairs": 48,
     "unique_instances": 1176,
     "split": {
-      "train": 588,
+      "test": 392,
       "validation": 196,
-      "test": 392
-    }
+      "train": 588
+    },
+    "parent_scales": [
+      20,
+      50
+    ],
+    "physical_scales": [
+      19,
+      20,
+      49,
+      50
+    ]
   },
   "composition": {
     "instances": 1512,
     "split": {
-      "test": 216,
       "train": 1224,
-      "validation": 72
+      "validation": 72,
+      "test": 216
     },
-    "freeze_id": "c226b4893ced13c8af3f8642d18f5bd08a664c149d50c40d5593396a0895688a",
-    "formal_model_experiments_completed": false
+    "reference_batch": {
+      "planned": 2086,
+      "receipts": 283,
+      "states": {
+        "COMPLETED": 283
+      },
+      "receipt_errors": [],
+      "instances": 432,
+      "workers": 3,
+      "public_reference_eligibility": "NOT_ACCEPTED_MIXED_POOL",
+      "quality_summary_published": false
+    }
   },
   "references": {
     "status": "WITHHELD_PENDING_VERSIONED_POOL_REBUILD",
-    "reason": "Historical mixed pool includes a custom heuristic without verified paper-reproduction provenance. Public method rows are withdrawn; a replacement pool has not been computed.",
-    "historical_local_runs_preserved": true,
-    "replacement_reference_counts_available": false,
-    "formal_ranking_claim": false,
-    "private_solutions_exported": false
-  },
-  "offline_preparation": {
-    "version": "realroute.offline_integration.v1.1",
-    "full_tests": 431,
-    "failures": 0,
-    "errors": 0,
-    "skipped": 1,
-    "control_conditions": 68,
-    "control_gate_accepted": 68,
-    "historical_replay_records": 46,
-    "new_model_api_calls": 0,
-    "candidate_calls": [
-      12,
-      48
-    ],
-    "llm_execution_enabled": false
-  },
-  "temporal_snapshot": {
-    "source": "offline integration acceptance snapshot",
-    "matched_tasks": 384,
-    "source_qualified_tasks": 384,
-    "oracle_is_mathematical_bound": false,
+    "historical_execution": {
+      "planned_jobs": 5880,
+      "results_with_matching_receipts": 5880,
+      "all_planned_jobs_terminal": true
+    },
+    "public_quality_summary_available": false,
+    "reason": "The historical mixed pool includes the withdrawn custom heuristic. No replacement EXACT/BKS/gap summary is claimed.",
+    "private_solutions_exported": false,
     "formal_ranking_claim": false
   },
-  "limitations": [
-    "Fresh sequence and final dynamic split are incomplete.",
-    "Reference preparation is interim, not a solver ranking.",
-    "Historical model fields do not prove fixed provider model identity.",
-    "Imputation is offline synthetic reconstruction and may use later observations."
-  ],
+  "traffic_reader": {
+    "version": "traffic-reconstruction-v3-oct22-extension",
+    "records": 864,
+    "reconstructed_matrices": 54,
+    "observed_cells_preserved": 1080584,
+    "reconstructed_cells": 1068616
+  },
+  "llm_pilot": {
+    "attempts": 64,
+    "status_counts": {
+      "EVALUATED": 14,
+      "ROUTE_INVALID": 28,
+      "MODEL_INVALID": 20,
+      "SEMANTIC_MISMATCH": 2
+    },
+    "first": {
+      "n": 48,
+      "valid": 9
+    },
+    "repeat": {
+      "n": 16,
+      "valid": 5
+    },
+    "direct": {
+      "n": 32,
+      "valid": 4
+    },
+    "model": {
+      "n": 32,
+      "valid": 10
+    },
+    "total_tokens": 477557,
+    "finish_counts": {
+      "stop": 64
+    },
+    "repeated_pairs": 16,
+    "repeat_same_validity": 9,
+    "formal_model_ranking_completed": false,
+    "relative_quality_gaps_withheld": true
+  },
+  "engineering": {
+    "last_archived_full_verification": {
+      "status": "PASS",
+      "verified_at_utc": "2026-10-22T16:01:50.260780+00:00",
+      "unit_tests_run": 541,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    "full_repository_tests_rerun_this_update": false,
+    "focused_provenance_tests_passed": 8,
+    "frozen_originals_match": true,
+    "provider_duration_mask_hash_errors": 0,
+    "managed_release_drift_count": 9,
+    "current_global_release_lock_pass_claimed": false
+  },
+  "agent_systems": {
+    "product_evaluation_sessions_completed": 0,
+    "full_task_runtime_admission_completed": false,
+    "scope": "Public package and development probes exist; no product leaderboard."
+  },
+  "future_snapshot": {
+    "formal_production_evaluation_runs": 0,
+    "within_route_traffic_switching_implemented": false
+  },
   "method_provenance_amendment": {
-    "date_jst": "2026-10-24",
     "withdrawn_method_id": "lns",
     "withdrawn_pilot_rows": 17,
     "retained_pilot_rows": 51,
-    "relative_gaps_withheld": true,
-    "other_snapshot_fields_not_refreshed": true
-  }
+    "relative_gaps_withheld": true
+  },
+  "limitations": [
+    "Provider OD estimates are not measured vehicle trips.",
+    "Operational demands, windows, fleets, prizes, and penalties are synthetic.",
+    "Reconstructed values are estimates and are never relabelled as collected observations.",
+    "A completed historical run is not acceptance of the withdrawn method.",
+    "Composition holdouts share city worlds with development; no joint unseen-city claim.",
+    "No full method comparison, final dynamic release, or formal model leaderboard is complete."
+  ]
 }

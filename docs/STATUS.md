@@ -1,24 +1,25 @@
-# Status · 2026-10-19
+# Current status · 2026-10-24
 
-Captured at `2026-10-19T06:15:45.768891+00:00`. This is a dated aggregate snapshot; see [machine-readable evidence](../evidence/PROGRESS_SNAPSHOT.json).
+Captured at **2026-10-24T01:04:05.760539+09:00 (Japan time)** / 2026-10-23T16:04:05.760413+00:00 (UTC). Values are a dated file/ledger snapshot, not a live uptime guarantee.
 
-| Component | State |
-| --- | --- |
-| Frozen definition, normalizer, independent checker | Implemented; original semantics unchanged |
-| OSM/OSRM foundation | 12 cities, 2,400 frozen endpoints, 48 matrix pairs |
-| Original static inputs | 1,176 unique; 588/196/392 city-held-out assignments |
-| Separate composition inputs | 1,512; 1224/72/216 interaction assignments; 14 atoms |
-| Fresh dynamic acquisition | 522 complete production PASS, 18 quarantined; 31.1% of 1680 complete |
-| Static reference publication | Withheld pending a versioned pool excluding the unverified custom heuristic; historical runs retained |
-| Reference coverage publication | No replacement EXACT/BKS count claimed; historical mixed-pool counts are not presented as current references |
-| Offline preparation | v1.1 integrated; 431 tests, zero failures, 1 skipped |
-| Deterministic control | 68/68 train conditions passed; 14-atom public training coverage separately checked |
-| Historical reply replay | 46 records; parse/status/checker/semantic layers separated; optimizer not rerun |
-| Formal LLM execution | Disabled; small balanced development designs await external verification |
-| Final dynamic split, prediction/JEPA, formal leaderboard | Pending |
+| Workstream | Actual state |
+|---|---|
+| Spatial foundation | 12 cities, 2,400 frozen endpoints, 48 matrix pairs |
+| Static inputs | 1,176 unique tasks; city split 588/196/392 |
+| Composition inputs | 1,512 unique tasks; split 1224/72/216; all 14 atoms |
+| Acquisition | 1,080 ledger slots: 1,005 nominal provider, 17 late recovery, 58 reconstructed, 0 unverified |
+| Raw attempts | 1,119 local directories, 81 quarantined; different denominator |
+| Traffic reader | 864-slot versioned index, 54 matrices containing estimates; it does not automatically cover all new ledger entries |
+| Historical static candidates | All 5,880 results and receipts present; public mixed-pool quality summaries remain withheld |
+| Composition candidates | 283/2,086 results with matching receipts; not a finalized reference pool |
+| LLM pilot | Spark first-attempt validity 9/48; repetitions 5/16; 64 total attempts, no final ranking |
+| Source classification | Eight focused tests pass, including cleared reason flags, late starts, and normalized absolute paths |
+| Latest archived full tests | 541, 0 failures, 2 skipped, at 2026-10-22T16:01:50.260780+00:00; full suite not rerun in this update |
+| Global release inventory | 9 managed entries differ at capture; no global-lock PASS claimed or lock rewrite |
+| Future snapshot | Interface/diagnostics exist; formal production evaluations 0 |
+| Agent products | Public package/probes exist; complete task admission and product evaluation pending |
+| Full method coverage | Exact/heuristic/neural/LLM/hybrid admission and fair comparisons incomplete |
 
-The original v1 formal manifest's composition flag does not describe the separate v2 composition cohort. Neither frozen inputs nor a passing test suite means experiments are complete. Private witnesses and detailed reference answers are not exported.
+The custom LNS-style method remains withdrawn from public performance records. The old mixed reference pool and its dependent gaps are not republished as approved references. Ongoing internal job counts include custom-method work and do not reverse this decision.
 
-## Method-provenance amendment · 2026-10-24
-
-The custom LNS-style implementation is withdrawn from public pilot results. The remaining 51 records preserve their original objective, validity, time, bounds and proof flags; relative gaps are withheld because their historical reference pool included the withdrawn method. [Provenance audit](LNS_IMPLEMENTATION_AUDIT_20261024.md). The acquisition and other experiment figures above remain the dated 2026-10-19 snapshot. No solvers, collectors, frozen manifests or raw local runs were changed.
+Next: finalize provenance-aware date inventories, admit a versioned reference pool, close matching metric/unit/missingness definitions, and execute the registered method matrix on supported tasks. Raw runs, collection services, frozen semantics, and private witnesses are unchanged by this export.

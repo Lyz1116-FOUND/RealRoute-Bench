@@ -7,4 +7,4 @@
 - **Chengdu historical link speeds**: [publisher Figshare record](https://figshare.com/articles/dataset/Urban_link_travel_speed_dataset_from_a_megacity_road_network/7140209). Publisher license/source provenance is distinct from OSM and contemporary provider outputs; raw historical files are not included here.
 - **Our scenario attributes** (demand, windows, service, prizes and fleet parameters) are generated experimental parameters on a real spatial base, not observed customer demand.
 
-This is a private research preview. No unified data redistribution permission, accepted paper, formal citation, or permissive project-wide license is asserted. Any later public release must identify artifact-specific terms and retain source provenance.
+This is a public research preview with curated artifacts; raw and private evaluation data are not included. No unified data redistribution permission, accepted paper, formal citation, or permissive project-wide license is asserted. Any later public release must identify artifact-specific terms and retain source provenance.

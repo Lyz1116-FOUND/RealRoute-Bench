@@ -1,28 +1,25 @@
-# Data card · 2026-10-19
+# Data card · 2026-10-24
 
-This is a private research preview with curated static inputs, not a complete dynamic data release.
+Snapshot: 2026-10-24T01:04:05.760539+09:00 (Japan time). Public research preview; final dynamic release and date assignments remain incomplete.
 
-## Sources and semantics
+## Sources
 
-- OSM places and roads supply canonical WGS84 spatial identity. A node is a public-road access point, not a certified facility entrance.
-- OSRM supplies profile-derived static duration and selected-route distance. It is not an observed trip time.
-- AMap supplies traffic-aware OD estimates on fixed requested endpoints; it does not expose the provider's full routing graph or actual vehicle trajectories.
-- Baidu supplies city-level context, curves and forecasts for a different scope; it is not OD truth.
-- Chengdu historical data remain a separate native-source auxiliary track: 45 downloaded days, 44 complete usable days; full mapping to the contemporary v3 node world is unresolved.
-- Demand, windows, rewards, penalties and fleet parameters are synthetic experimental attributes.
+OSM places/roads provide real spatial sources and public-road access points, not certified building entrances. OSRM yields profile-derived static duration and corresponding-route distance. AMap yields traffic-aware OD estimates, not observed vehicle trips. Demands, windows, service times, fleets, prizes and penalties are synthetic experimental attributes. Baidu city context is not OD truth. Chengdu 2015 data remain a separate native historical track: 91 source files, 45 calendar days, 44 usable source days, 308 auxiliary matrices; no verified identity mapping to the 2026 node world.
 
-## Fresh acquisition
+## Acquisition and counts
 
-China-local 2026-10-15 through 2026-10-28; 12 cities, 200 fixed nodes, 10 frames per day. The target is 1680 frames of 39800 non-diagonal OD values each. There are currently 522 complete production PASS frames and 18 quarantined slots. Diagonal zero is legitimate; missing off-diagonal entries are never zero-filled.
+The active plan covers China-local 2026-10-15 through 2026-10-28: 12 cities × 14 days × 10 slots = 1,680 target slots. There are 1,080 current ledger records: **1,005 nominal provider frames, 17 late-recovery provider frames, 58 reconstructed references, 0 unverified**. All current ledger rows can be PASS while retaining these different source classes. Local raw attempts separately total 1,119, with 81 quarantined; they include commissioning, duplicate/unused attempts, and failures. A slot count is not an attempt count or an independent-sample count.
 
-Three four-city groups start at nominal time, +5 minutes and +10 minutes. Each frame keeps source, request/response, acquisition and available_at evidence. Provider observation/update time may be unknown. Same-frame OD entries are correlated spatial observations, not independent time samples.
+Classification uses source path, provider manifest status, nominal identity and actual request start relative to the city's scheduled start, with 330 s lateness tolerance. Cleared reason flags never establish provenance. Absolute paths are normalized only under the explicit workspace root; out-of-root or missing evidence is unverified. See the machine-readable category definitions and city/day table.
 
-## Missingness and imputation
+Each N200 frame has 39,800 non-diagonal directed OD pairs. Cities start in +0/+5/+10-minute groups; each matrix is collected over a bounded window of at most 300 s. Diagonal zero is structural. Missing off-diagonal values are not zero-filled in raw frames. Timing and same-frame spatial dependence must be retained.
 
-Quarantine and real missingness are preserved. Offline imputation is synthetic reconstruction and may use later frames or later dates. It cannot count as complete REAL acquisition, replace measured evaluation truth, or enter causal decision inputs without a separate availability protocol.
+## Reconstruction and availability
 
-## Splits and distribution
+The 864-slot active reconstruction index includes 54 matrices with estimated values. Its coverage differs from the 1,080-slot ledger and 58 derived references. The extension preserves 1,080,584 observed cells and estimates 1,068,616 unknown cells within the reconstructed matrices. These are not new acquired observations.
 
-The downloadable static bundle has 1176 distinct tasks. Original pickup–delivery cases can use physical N19/N49 despite N20/N50 parent scales; the separate composition cohort uses its own construction. Final dynamic-date splits await QA.
+Legacy reconstructions can use later observations and are offline estimates. The newer spatial/temporal reconstruction version preserves observed cells and discloses its historical donors, but its development was a retrospective study, not proof of end-to-end online availability. Real missing cells have no measured ground truth. Report observed-only and reconstructed sensitivity conditions separately; late-recovery queries do not become original-slot truth.
 
-No credentials, provider account balances, raw API responses, private witnesses or detailed reference solutions are in this repository. Source-specific rights and attribution remain distinct; see [ATTRIBUTION.md](../ATTRIBUTION.md). This card does not grant new redistribution permissions.
+## Scope and exclusions
+
+The input download has 1,176 static tasks with synthetic business attributes and physical N19/N20/N49/N50. The independent composition set has 1,512 tasks on shared city worlds. Nested scales and derived scenarios are correlated. No raw provider responses, private answer routes, credentials or account details are exported. [Source attribution](../ATTRIBUTION.md) remains artifact-specific; this card grants no new redistribution permission.

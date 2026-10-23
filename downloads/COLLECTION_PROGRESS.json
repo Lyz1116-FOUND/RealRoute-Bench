@@ -1,6 +1,7 @@
 {
-  "schema": "realroute.collection_progress.v2",
-  "snapshot_at": "2026-10-19T06:15:45.768891+00:00",
+  "schema": "realroute.collection_progress.v4",
+  "snapshot_at": "2026-10-23T16:04:05.760413+00:00",
+  "snapshot_at_jst": "2026-10-24T01:04:05.760539+09:00",
   "timezone": "Asia/Shanghai",
   "series_id": "realroute-fresh-20261015-mac-v1",
   "window": {
@@ -14,113 +15,181 @@
     "od_entries_per_complete_frame": 39800
   },
   "progress": {
-    "current_day": 5,
-    "complete_real_pass_frames": 522,
-    "quarantined_frames": 18,
-    "recorded_slots": 540,
+    "recorded_slots": 1080,
     "states": {
-      "PASS": 522,
-      "QUARANTINE": 18
+      "PASS": 1080
     },
-    "recorded_slot_percentage": 32.14,
-    "complete_frame_percentage": 31.07,
-    "complete_frame_od_time_values": 20775600,
+    "complete_provider_nominal_frames": 1005,
+    "late_recovery_provider_frames": 17,
+    "reconstructed_frames": 58,
+    "unverified_frames": 0,
+    "provider_complete_frames_including_late_recovery": 1022,
+    "recorded_slot_percentage": 64.29,
+    "nominal_provider_percentage_of_plan": 59.82,
+    "nominal_provider_od_time_values": 39999000,
+    "provider_od_time_values_including_late_recovery": 40675600,
+    "current_ledger_quarantined_slots": 0,
     "final_dynamic_release_completed": false
   },
   "daily": [
     {
       "date": "2026-10-15",
-      "complete_real_pass_frames": 116,
-      "quarantined_frames": 4,
+      "nominal_provider": 116,
+      "reconstructed": 4,
       "recorded_slots": 120
     },
     {
       "date": "2026-10-16",
-      "complete_real_pass_frames": 106,
-      "quarantined_frames": 14,
+      "nominal_provider": 106,
+      "reconstructed": 14,
       "recorded_slots": 120
     },
     {
       "date": "2026-10-17",
-      "complete_real_pass_frames": 120,
-      "quarantined_frames": 0,
+      "nominal_provider": 120,
       "recorded_slots": 120
     },
     {
       "date": "2026-10-18",
-      "complete_real_pass_frames": 120,
-      "quarantined_frames": 0,
+      "nominal_provider": 120,
       "recorded_slots": 120
     },
     {
       "date": "2026-10-19",
-      "complete_real_pass_frames": 60,
-      "quarantined_frames": 0,
-      "recorded_slots": 60
+      "nominal_provider": 112,
+      "late_recovery_provider": 3,
+      "reconstructed": 5,
+      "recorded_slots": 120
+    },
+    {
+      "date": "2026-10-20",
+      "nominal_provider": 111,
+      "reconstructed": 9,
+      "recorded_slots": 120
+    },
+    {
+      "date": "2026-10-21",
+      "nominal_provider": 108,
+      "late_recovery_provider": 2,
+      "reconstructed": 10,
+      "recorded_slots": 120
+    },
+    {
+      "date": "2026-10-22",
+      "reconstructed": 16,
+      "late_recovery_provider": 12,
+      "nominal_provider": 92,
+      "recorded_slots": 120
+    },
+    {
+      "date": "2026-10-23",
+      "nominal_provider": 120,
+      "recorded_slots": 120
     }
   ],
   "cities": [
     {
+      "city": "anji",
+      "nominal_provider": 84,
+      "reconstructed": 5,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
+    },
+    {
       "city": "beijing",
-      "complete_real_pass_frames": 43,
-      "quarantined_frames": 2
-    },
-    {
-      "city": "shanghai",
-      "complete_real_pass_frames": 43,
-      "quarantined_frames": 2
-    },
-    {
-      "city": "xian",
-      "complete_real_pass_frames": 44,
-      "quarantined_frames": 1
-    },
-    {
-      "city": "chongqing",
-      "complete_real_pass_frames": 43,
-      "quarantined_frames": 2
+      "nominal_provider": 83,
+      "reconstructed": 4,
+      "late_recovery_provider": 3,
+      "recorded_slots": 90
     },
     {
       "city": "chengdu",
-      "complete_real_pass_frames": 44,
-      "quarantined_frames": 1
+      "nominal_provider": 83,
+      "reconstructed": 6,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
     },
     {
-      "city": "hangzhou",
-      "complete_real_pass_frames": 44,
-      "quarantined_frames": 1
-    },
-    {
-      "city": "wuhan",
-      "complete_real_pass_frames": 42,
-      "quarantined_frames": 3
-    },
-    {
-      "city": "xiamen",
-      "complete_real_pass_frames": 44,
-      "quarantined_frames": 1
-    },
-    {
-      "city": "sanya",
-      "complete_real_pass_frames": 44,
-      "quarantined_frames": 1
-    },
-    {
-      "city": "yiwu",
-      "complete_real_pass_frames": 44,
-      "quarantined_frames": 1
+      "city": "chongqing",
+      "nominal_provider": 84,
+      "reconstructed": 3,
+      "late_recovery_provider": 3,
+      "recorded_slots": 90
     },
     {
       "city": "dunhuang",
-      "complete_real_pass_frames": 44,
-      "quarantined_frames": 1
+      "nominal_provider": 85,
+      "reconstructed": 4,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
     },
     {
-      "city": "anji",
-      "complete_real_pass_frames": 43,
-      "quarantined_frames": 2
+      "city": "hangzhou",
+      "nominal_provider": 83,
+      "reconstructed": 6,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
+    },
+    {
+      "city": "sanya",
+      "nominal_provider": 85,
+      "reconstructed": 4,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
+    },
+    {
+      "city": "shanghai",
+      "nominal_provider": 84,
+      "reconstructed": 4,
+      "late_recovery_provider": 2,
+      "recorded_slots": 90
+    },
+    {
+      "city": "wuhan",
+      "nominal_provider": 81,
+      "reconstructed": 8,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
+    },
+    {
+      "city": "xiamen",
+      "nominal_provider": 83,
+      "reconstructed": 6,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
+    },
+    {
+      "city": "xian",
+      "nominal_provider": 85,
+      "reconstructed": 4,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
+    },
+    {
+      "city": "yiwu",
+      "nominal_provider": 85,
+      "reconstructed": 4,
+      "late_recovery_provider": 1,
+      "recorded_slots": 90
     }
   ],
-  "counting_rule": "Only production PASS frames count as complete REAL matrices. Quarantined and imputed values do not count as complete REAL frames.",
-  "scope": "Dated aggregate snapshot, not a live monitor; no raw provider data, account identities, balances or credentials."
+  "raw_frame_attempts": {
+    "scope": "All local AMap frame attempts, including commissioning and unused attempts; not unique production slots",
+    "count": 1119,
+    "states": {
+      "PASS": 1038,
+      "QUARANTINE": 81
+    }
+  },
+  "classification": {
+    "nominal_provider": "Production ledger PASS, provider manifest PASS, matching nominal time, actual start within scheduled start tolerance. It is a bounded-window provider estimate, not a measured vehicle trip.",
+    "late_recovery_provider": "A real provider query with a different nominal time or an actual start outside the declared schedule tolerance; not original-slot ground truth.",
+    "reconstructed": "Reference to a derived/reconstructed matrix, including partially observed matrices; estimated cells are not counted as acquired observations.",
+    "unverified": "Unknown provenance, missing timestamps, non-PASS state, or another unaccepted input; never counted as completed acquisition.",
+    "max_start_lateness_s": 330,
+    "reason_flags_used_as_provenance": false,
+    "absolute_paths_normalized_under_explicit_root": true,
+    "legacy_complete_real_pass_frames_field_removed": true
+  },
+  "scope": "Dated aggregate evidence only. Ledger slots, raw attempts, recovered observations, and reconstructed matrices use different denominators. No raw responses, credentials, account details, private routes, or local absolute paths are exported."
 }

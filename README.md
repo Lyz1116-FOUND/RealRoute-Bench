@@ -1,92 +1,57 @@
-<p align="center"><img src="assets/hero.svg" alt="RealRoute-Bench: 12 cities, 2400 frozen endpoints, 14 constraint atoms" width="100%"></p>
+<p align="center"><img src="assets/hero.svg" alt="RealRoute-Bench" width="100%"></p>
 
 # RealRoute-Bench
 
-**Method-provenance amendment · 2026-10-24:** The custom heuristic is not a verified reproduction of a published algorithm; its public results have been withdrawn and mixed-pool reference summaries are withheld. The LNS framework itself has established literature. [Audit and disposition](docs/LNS_IMPLEMENTATION_AUDIT_20261024.md). Other acquisition and experiment figures below retain their historical snapshot dates; they were not refreshed in this amendment.
+**Routing evaluation across real city road worlds, scales, constraint interactions, and traffic information.**
 
-**Can routing systems generalize across real cities, constraint compositions, and changing traffic?**
+[中文](README.zh-CN.md) · [Status](docs/STATUS.md) · [Full report (Chinese)](docs/GROUP_SUMMARY_20261024.md) · [Data card](docs/DATA_CARD.md) · [Method coverage](docs/METHOD_COVERAGE.md)
 
-[简体中文](README.zh-CN.md) · [Status](docs/STATUS.md) · [Data card](docs/DATA_CARD.md) · [Evaluation](docs/EVALUATION.md) · [Repository scope](docs/REPOSITORY_SCOPE.md)
+**Research preview. Captured at 2026-10-24T01:04:05.760539+09:00 (Japan time).** This public repository contains curated inputs, documentation, and aggregate evidence. It is not an executable workspace backup or a completed leaderboard.
 
-> **Research preview · 2026-10-19.** Collection and static-reference preparation are in progress. The complete dynamic release, formal LLM experiments and leaderboard are pending. This private repository is a curated artifact and progress snapshot, not a backup of the executable research workspace.
+## Foundation and provenance
 
-## One world, composable tasks
+12 city worlds, 2,400 fixed public-road access points, nested N20/50/100/200 subsets, and 48 static duration/distance pairs. Static tasks: 1,176 (588/196/392 city split); separate composition tasks: 1,512 (1224/72/216), sharing city worlds across interaction partitions. Existing task parent scales are N20/N50; original pickup-delivery physical sizes can be N19/N49.
 
-`BaseInstance + Scenario → Solver / LLM → Solution → independent checker`
-
-A BaseInstance fixes node identity, order and directed matrices. A Scenario specifies objectives, vehicles, visit rules and constraint parameters. **Constraint configurations define the problem; classical names are templates.** The solver-independent checker reconstructs feasibility and objectives.
-
-![World, task, solver and independent validation](assets/pipeline.svg)
-
-| Research axis | Available foundation | Remaining evidence |
-| --- | --- | --- |
-| Spatial generalization | 12 frozen city worlds; 1,176 static instances; city-held-out split | Full references and controlled solver comparisons |
-| Composition generalization | Separate 1,512-case input set; all 14 atoms; interaction holdouts | Full composition references and formal model runs |
-| Temporal information | Static / Reactive / Oracle on a common future snapshot; source-availability audit | Final sequence QA, date split and predictive-method experiments |
-
-Demand, windows, service, prizes and fleets are **synthetic operational attributes**. OSRM durations are profile estimates; AMap durations are provider traffic-aware OD estimates. These are not observed delivery orders or vehicle-trajectory ground truth.
+OSM provides spatial sources; OSRM computes profile-derived static estimates; AMap provides traffic-aware OD estimates. These are not measured vehicle journeys. Operational attributes are synthetic. Reconstructed values remain estimates and are not relabelled as acquired observations.
 
 ## Dated progress
 
-Captured at `2026-10-19T06:15:45.768891+00:00` (UTC). The acquisition window is **15–28 October 2026**, China local time.
+| Component | Verified record |
+|---|---|
+| Recorded production slots | 1,080/1,680 (64.3%); ledger coverage only |
+| Nominal-window provider frames | 1,005 |
+| Late-recovery provider frames | 17; genuine queries with separately disclosed timing |
+| Derived/reconstructed references | 58; excluded from nominal acquisition counts |
+| All local frame attempts | 1,119, including 81 quarantined attempts; includes commissioning and unused attempts |
+| Historical static candidate jobs | 5,880/5,880 results with matching receipts; mixed-pool quality summary withheld |
+| New composition candidate batch | 283/2,086 jobs; job completion is not public-reference eligibility |
+| Spark development pilot | 64 requests; first attempts 9/48 valid, added repetitions 5/16 valid; no model ranking |
+| Engineering | Latest archived full suite: 541 tests, 0 failures, 2 skipped. This update: 8 focused provenance tests; full suite not rerun |
 
-| Component | Current evidence |
-| --- | --- |
-| Recorded production slots | **540 / 1,680 (32.1%)**; per-frame quality status is retained in the machine-readable snapshot |
-| Static-reference summary | Withheld pending a versioned reference-pool rebuild; historical runs are retained locally |
-| Reference publication | Custom-heuristic results withdrawn; no replacement EXACT/BKS counts claimed |
-| Engineering verification | **431 tests, zero failures, 1 skipped**; not completion of formal experiments |
-| Deterministic modeling control | 68 training conditions passed the semantic gate; two renderings checked for all 14 atoms; no new model calls |
-| LLM preparation | 46 historical records replayed by layer; disabled balanced development designs of 12 or 48 calls |
+[Aggregate evidence](evidence/PROGRESS_SNAPSHOT.json) · [Acquisition categories](downloads/COLLECTION_PROGRESS.json) · [City/day counts](downloads/COLLECTION_COVERAGE.csv)
 
-The collection count reports recorded production slots; completeness and provenance are defined in the machine-readable snapshot and data card. Repeated seeds do not create independent instances. EXACT and BKS are separate, and interim results are not rankings.
+The active acquisition plan is 15–28 October 2026, China local time, 10 nominal slots per city per day. City groups start at +0/+5/+10 minutes. A frame is a bounded acquisition window, not an instantaneous observation. The ledger PASS flag alone is not provenance evidence.
 
-[Progress evidence](evidence/PROGRESS_SNAPSHOT.json) · [Collection snapshot](downloads/COLLECTION_PROGRESS.json) · [City/day coverage](downloads/COLLECTION_COVERAGE.csv) · [Offline preparation](docs/OFFLINE_PREPARATION.md)
+## Methods and acceptance
 
-## Cities and nodes
+`BaseInstance + Scenario → solver/model → Solution → independent checker`
 
-Beijing, Shanghai, Xi'an, Chongqing, Chengdu, Hangzhou, Wuhan, the declared Xiamen study region, Sanya, Yiwu, Dunhuang and Anji. Each has a frozen Master-200 set and nested 20/50/100/200 subsets. The 2,400 nodes are **public-road access points associated with real OSM places**, not certified building entrances or final-access routes.
+Exact solvers, constructive/local search, metaheuristics, neural construction/improvement, LLMs, and hybrid systems all require versioned admission, semantic support, and resource budgets. Full method coverage and formal neural baselines remain incomplete. Unsupported semantics are rejected, not silently weakened.
 
-<details><summary>Frozen node maps for all 12 study regions</summary>
+Direct outputs routes. Model outputs a declarative Scenario, checked before fixed HiGHS execution. Scores and resource conditions are separate. No universal natural-language or arbitrary generated-code competence is claimed.
 
-![Cities 1–4](assets/NODE_MAPS_1.png)
-![Cities 5–8](assets/NODE_MAPS_2.png)
-![Cities 9–12](assets/NODE_MAPS_3.png)
+**The custom-heuristic withdrawal remains effective.** Its 17 pilot rows are absent. The [51 retained historical records](downloads/PILOT_RESULTS.csv) preserve original solver fields, while relative gaps and mixed-pool EXACT/BKS summaries remain withheld. [Provenance audit](docs/LNS_IMPLEMENTATION_AUDIT_20261024.md). New internal batches still include that method; only execution counts are published, not acceptance as a literature baseline.
 
-</details>
+## Resources and next work
 
-[Measured city structure](downloads/CITY_METRICS.csv). Sampling strata are research-design choices, not observed urban delivery-demand proportions.
+[Static input ZIP](downloads/static_public_v1.zip) · [City split](downloads/STATIC_SPLIT.json) · [Frozen specification](docs/PROBLEM_SPEC_V1.md) · [Schemas](schemas/) · [Catalog](catalog/) · [Attribution](ATTRIBUTION.md)
 
-## Data and verification
-
-| Resource | Contents and limits |
-| --- | --- |
-| [Static inputs](downloads/static_public_v1.zip) | 1,176 base/scenario pairs, no private witnesses; parent N20/N50, with some physical N19/N49 pickup–delivery cases |
-| [Static assignments](downloads/STATIC_SPLIT.json) | 588 train / 196 validation / 392 test; city-derived inputs stay together |
-| [Frozen specification](docs/PROBLEM_SPEC_V1.md), [schemas](schemas/), [catalog](catalog/) | 14 atoms, four objectives, 11 classical templates and six original composition presets |
-| [Historical development records](downloads/PILOT_RESULTS.csv) | 51 retained greedy/Gurobi/HiGHS records; custom heuristic withdrawn; relative gaps withheld; not a leaderboard |
-| [Checksums](downloads/SHA256.json) | Download and snapshot integrity |
+Close source/timing and final-date QA, build a new admitted reference pool, and complete difficulty controls before full comparisons. Predictive/JEPA methods, product Agent evaluation, the final dynamic release, and formal leaderboards are pending.
 
 ```sh
 python3 scripts/verify_downloads.py
+python3 scripts/test_collection_provenance_v4.py
+python3 scripts/verify_progress_v4.py
 ```
 
-This command verifies the curated downloads only. Full executable source, raw provider responses, environments, operational ledgers and private reference answers are not shipped in this repository snapshot.
-
-## Evaluation
-
-- **Direct:** public constraints and matrices → route JSON → checker.
-- **Model:** the same public input → declarative Scenario → semantic gate → fixed solver → checker.
-- **Deterministic control:** the same controlled prompt → rule parser → the same gate and solver policy. This is not arbitrary natural-language understanding.
-- **Temporal:** all modes choose routes under their declared information and are scored on the same designated future matrix. A heuristic Oracle is not a mathematical bound.
-
-City and composition holdouts are separate experiments. Composition development shares city worlds and does not establish simultaneous unseen-city and unseen-composition generalization. Future traffic belongs only to Oracle and evaluation. Offline imputation may use later observations and is not causal forecasting input.
-
-## Next milestones
-
-1. Complete collection and QA; retain missingness and freeze date assignments.
-2. Finish task-level EXACT / BKS / unavailable reference coverage.
-3. Verify provider identity, tools, usage and balance before freezing a balanced LLM execution cohort.
-4. Complete controlled experiments and a versioned release before publishing a paper or formal leaderboard.
-
-[Website and storage plan](docs/HOSTING.md) · [Attribution and distribution boundaries](ATTRIBUTION.md). An author-approved paper citation is pending.
+These are offline artifact/aggregation checks, not raw API replay or external traffic-accuracy validation. No raw provider responses, private routes/witnesses, accounts, credentials, or local absolute paths are shipped.

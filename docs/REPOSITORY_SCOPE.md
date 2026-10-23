@@ -1,6 +1,6 @@
 # Repository contents and storage boundaries
 
-This private repository currently contains a **curated project-page snapshot**. Updating progress here does not back up the executable workspace.
+This public repository currently contains a **curated project-page snapshot**. Updating progress here does not back up the executable workspace.
 
 | Location | What belongs there |
 | --- | --- |
@@ -22,4 +22,4 @@ docs/  manifests/               # protocols, data versions and hashes
 pyproject.toml  requirements.lock
 ```
 
-This update preserves the existing repository scope and privacy. It does not silently turn the curated page into a full source backup or publish a site.
+This update preserves the curated repository scope and does not change repository visibility. It does not silently turn the curated page into a full source backup or publish a site.
